@@ -230,13 +230,13 @@ class AppController extends Controller
                     ],
                     [
                         'controllers' => ['crm/cliente'],
-                        'actions' => ['create'],
+                        'actions' => ['create','get-lista-desplegable'],
                         'allow' => true,
                         'roles' => ['clienteCreate'],
                     ],
                     [
                         'controllers' => ['crm/cliente'],
-                        'actions' => ['update'],
+                        'actions' => ['update','get-lista-desplegable'],
                         'allow' => true,
                         'roles' => ['clienteUpdate'],
                     ],
@@ -536,6 +536,15 @@ class AppController extends Controller
                             'ajax-productos',
                             'guardar-venta',
                         ],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+
+                    // Tipo de cambio
+
+                    [
+                        'controllers' => ['configuracion/tipo-cambio'],
+                        'actions' => ['index', 'tipo-cambios-json-btt','post-tipo-cambio','tipo-cambio-json-btt'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],

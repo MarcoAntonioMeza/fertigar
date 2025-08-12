@@ -25,6 +25,10 @@ return [
                 'label' => 'tipo_cliente',
                 'text'  => 'Tipo de cliente',
             ],
+            [
+                'label' => 'titulo_cliente',
+                'text'  => 'Titulo personal',
+            ],
         ],
     ],
     [

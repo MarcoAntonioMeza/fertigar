@@ -97,6 +97,7 @@ $bttUrlDelete = Url::to(['delete?id=']);
                 {
                     field: 'email',
                     title: 'Correo electrónico',
+                    width: '60',
                     sortable: true,
                 },
                 {
@@ -105,13 +106,13 @@ $bttUrlDelete = Url::to(['delete?id=']);
                     switchable: false,
                     sortable: true,
                 },
-                {
-                    field: 'sexo',
-                    title: 'sexo',
-                    align: 'center',
+                 {
+                    field: 'rfc',
+                    title: 'RFC',
+                    switchable: false,
                     sortable: true,
-                    formatter: btf.user.sexo,
                 },
+                
                 {
                     field: 'telefono',
                     title: 'Teléfono',

@@ -20,7 +20,15 @@ use app\models\esys\EsysListaDesplegable;
 
     <?php $form = ActiveForm::begin(['id' => 'form-cliente']) ?>
 
-    <?= $form->field($model, 'titulo_personal_id')->hiddenInput()->label(false) ?>
+    <p>
+        <?= Html::a('Cancelar', ['index'], [
+            'class' => 'btn btn-outline-secondary mr-2 btn-zoom',
+        ]) ?>
+        <?= Html::submitButton($model->isNewRecord ? '<i class="fa fa-plus"></i> Crear cliente' : '<i class="fa fa-save"></i> Guardar cambios', [
+            'class' => $model->isNewRecord ? 'btn btn-success btn-zoom btn-loading' : 'btn btn-primary btn-zoom btn-loading',
+            'id' => 'btnClienteSave'
+        ]) ?>
+    </p>
 
     <div class="row">
         <!-- Columna izquierda - Información principal -->
@@ -28,30 +36,46 @@ use app\models\esys\EsysListaDesplegable;
             <!-- Sección de información general -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5><i class="fas fa-user"></i> Información General</h5>
+                    <h5><i class="fa fa-user"></i> Información General</h5>
                 </div>
                 <div class="card-body">
                     <?= $form->errorSummary($model) ?>
 
                     <div class="row">
                         <div class="col-md-6">
-                            <?= $form->field($model, 'atraves_de_id')->dropDownList(
-                                EsysListaDesplegable::getItems('origen_cliente'),
-                                ['prompt' => 'Seleccione cómo nos conoció']
-                            ) ?>
+                            <div class="row">
+                                <div class="col-sm-9">
+                                    <?= $form->field($model, 'atraves_de_id')->dropDownList(
+                                        EsysListaDesplegable::getItems('origen_cliente'),
+                                        ['prompt' => 'Seleccione cómo nos conoció']
+                                    ) ?>
+                                </div>
+                                <div class="col-sm-3 text-center" style="align-content: center;">
+                                    <?= Html::button("<i class = 'fa fa-refresh'></i>", ["class" => "btn btn-success btn-xs btnListaDesplegable "]) ?>
+                                    <?= Html::a("<i class = 'fa fa-plus'></i>", [ '/admin/listas-desplegables/index' ], ["class" => "btn btn-primary btn-xs ", "target" => "_black" ]) ?>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <?= $form->field($model, 'tipo_cliente_id')->dropDownList(
-                                EsysListaDesplegable::getItems('tipo_cliente'),
-                                ['prompt' => 'Seleccione tipo de cliente']
-                            ) ?>
+                            <div class="row">
+                                <div class="col-sm-9">
+                                    <?= $form->field($model, 'tipo_cliente_id')->dropDownList(
+                                        EsysListaDesplegable::getItems('tipo_cliente'),
+                                        ['prompt' => 'Seleccione tipo de cliente']
+                                    ) ?>
+                                </div>
+                                <div class="col-sm-3 text-center" style="align-content: center;">
+                                    <?= Html::button("<i class = 'fa fa-refresh'></i>", ["class" => "btn btn-success btn-xs btnListaDesplegable "]) ?>
+                                    <?= Html::a("<i class = 'fa fa-plus'></i>", [ '/admin/listas-desplegables/index' ], ["class" => "btn btn-primary btn-xs ", "target" => "_black" ]) ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-4">
                             <?= $form->field($model, 'titulo_personal_id')->dropDownList(
-                                EsysListaDesplegable::getItems('titulo_personal'),
+                                EsysListaDesplegable::getItems('titulo_cliente'),
                                 ['prompt' => 'Título']
                             ) ?>
                         </div>
@@ -83,7 +107,7 @@ use app\models\esys\EsysListaDesplegable;
             <!-- Sección de contacto -->
             <div class="card mb-4">
                 <div class="card-header bg-info text-white">
-                    <h5><i class="fas fa-phone"></i> Información de Contacto</h5>
+                    <h5><i class="fa fa-phone"></i> Información de Contacto</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -149,7 +173,7 @@ use app\models\esys\EsysListaDesplegable;
             <!-- Sección de información fiscal -->
             <div class="card mb-4">
                 <div class="card-header bg-warning text-white">
-                    <h5><i class="fas fa-file-invoice-dollar"></i> Información Fiscal</h5>
+                    <h5><i class="fa fa-file-invoice-dollar"></i> Información Fiscal</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -184,7 +208,7 @@ use app\models\esys\EsysListaDesplegable;
             <!-- Sección de dirección -->
             <div class="card mb-4">
                 <div class="card-header bg-success text-white">
-                    <h5><i class="fas fa-map-marker-alt"></i> Dirección</h5>
+                    <h5><i class="fa fa-map-marker-alt"></i> Dirección</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -287,7 +311,7 @@ use app\models\esys\EsysListaDesplegable;
             <!-- Sección de crédito -->
             <div class="card mb-4">
                 <div class="card-header bg-purple text-white">
-                    <h5><i class="fas fa-credit-card"></i> Límite de Crédito</h5>
+                    <h5><i class="fa fa-credit-card"></i> Límite de Crédito</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -310,7 +334,7 @@ use app\models\esys\EsysListaDesplegable;
             <!-- Sección de estado -->
             <div class="card mb-4">
                 <div class="card-header bg-secondary text-white">
-                    <h5><i class="fas fa-info-circle"></i> Estado del Cliente</h5>
+                    <h5><i class="fa fa-info-circle"></i> Estado del Cliente</h5>
                 </div>
                 <div class="card-body">
                     <?= $form->field($model, 'status')->dropDownList(
@@ -323,7 +347,7 @@ use app\models\esys\EsysListaDesplegable;
             <!-- Sección de notas -->
             <div class="card mb-4">
                 <div class="card-header bg-dark text-white">
-                    <h5><i class="fas fa-sticky-note"></i> Notas Adicionales</h5>
+                    <h5><i class="fa fa-sticky-note"></i> Notas Adicionales</h5>
                 </div>
                 <div class="card-body">
                     <?= $form->field($model, 'notas')->textarea([
@@ -335,18 +359,7 @@ use app\models\esys\EsysListaDesplegable;
         </div>
     </div>
 
-    <!-- Botones de acción -->
-    <div class="row m-4">
-        <div class="col-md-12 text-center">
-            <?= Html::a('Cancelar', ['index'], [
-                'class' => 'btn btn-outline-secondary mr-2 btn-zoom',
-            ]) ?>
-            <?= Html::submitButton($model->isNewRecord ? '<i class="fas fa-plus"></i> Crear cliente' : '<i class="fas fa-save"></i> Guardar cambios', [
-                'class' => $model->isNewRecord ? 'btn btn-success btn-zoom' : 'btn btn-primary btn-zoom',
-                'id' => 'btnClienteSave'
-            ]) ?>
-        </div>
-    </div>
+    
 
     <?php ActiveForm::end(); ?>
 
@@ -359,46 +372,85 @@ use app\models\esys\EsysListaDesplegable;
         $inputColonia = $('#esysdireccion-codigo_postal_id'),
         $error_codigo = $('#error-codigo-postal'),
         $btnClienteSave = $('#btnClienteSave'),
+        $btnListaDesplegable = $('.btnListaDesplegable'),
         municipioSelected = null;
 
+
     $(document).ready(function() {
+        
         $inputCodigoSearch.change(function() {
             $inputColonia.html('');
             $inputEstado.val(null).trigger("change");
 
             var codigo_search = $inputCodigoSearch.val();
 
-            $.get('<?= Url::to('@web/municipio/codigo-postal-ajax') ?>', {
-                'codigo_postal': codigo_search
-            }, function(json) {
-                if (json.length > 0) {
-                    $error_codigo.hide();
-                    $inputEstado.val(json[0].estado_id);
-                    $inputEstado.trigger('change');
-                    municipioSelected = json[0].municipio_id;
+            if (codigo_search) {
+                $.get('<?= Url::to('@web/municipio/codigo-postal-ajax') ?>', {
+                    'codigo_postal': codigo_search
+                }, function(json) {
+                    if (json.length > 0) {
+                        $error_codigo.hide();
+                        $inputEstado.val(json[0].estado_id);
+                        $inputEstado.trigger('change');
+                        municipioSelected = json[0].municipio_id;
 
-                    $.each(json, function(key, value) {
-                        $inputColonia.append("<option value='" + value.id + "'>" + value.colonia + "</option>\n");
-                    });
-                } else {
-                    municipioSelected = null;
-                    $error_codigo.show();
-                }
+                        $.each(json, function(key, value) {
+                            $inputColonia.append("<option value='" + value.id + "'>" + value.colonia + "</option>\n");
+                        });
+                    } else {
+                        municipioSelected = null;
+                        $error_codigo.show();
+                    }
 
-                $inputColonia
-                    .val(null)
-                    .trigger("change");
+                    $inputColonia
+                        .val(null)
+                        .trigger("change");
 
-            }, 'json');
+                }, 'json');
+            }
+        });
+    });
+
+
+    $('form').on('keydown', 'input', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            return false;
+        }
+    });
+   
+
+    $btnListaDesplegable.click(function(){
+        $.get('<?= Url::to('@web/crm/cliente/get-lista-desplegable') ?>', function(response){
+            let atravesID = $('#cliente-atraves_de_id').val();
+            $('#cliente-atraves_de_id').html(null);
+            $('#cliente-atraves_de_id').append(new Option('Seleccione...', '', true, true));
+            $.each(response.origenClienteList, function(key, origen){
+                $('#cliente-atraves_de_id').append(new Option(origen , key ));
+            });
+            
+            if(atravesID)
+                $('#cliente-atraves_de_id').val(atravesID);
+
+            let tipoClienteID = $('#cliente-tipo_cliente_id').val();
+            $('#cliente-tipo_cliente_id').html(null);
+            $('#cliente-tipo_cliente_id').append(new Option('Seleccione...', '', true, true));
+            $.each(response.tipoClienteList, function(key, tipoCliente){
+                $('#cliente-tipo_cliente_id').append(new Option(tipoCliente , key ));
+            });
+
+            if(tipoClienteID)
+                $('#cliente-tipo_cliente_id').val(tipoClienteID);
         });
     });
 
     $inputMunicipio.change(function() {
-        if ($inputEstado.val() != 0 && $inputMunicipio.val() != 0 && $inputCodigoSearch.val() != "") {
+        if ($inputEstado.val() != 0 && $inputMunicipio.val() != 0 && $inputCodigoSearch.val() == "") {
             $inputColonia.html('');
             $.get('<?= Url::to('@web/municipio/colonia-ajax') ?>', {
                 'estado_id': $inputEstado.val(),
-                "municipio_id": $inputMunicipio.val()
+                "municipio_id": $inputMunicipio.val(),
+                'codigo_postal' : $inputColonia.val()
             }, function(json) {
                 if (json.length > 0) {
                     $.each(json, function(key, value) {

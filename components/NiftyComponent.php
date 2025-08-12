@@ -94,9 +94,13 @@ class NiftyComponent extends Component{
 			#	$tpvPrecaptura[] = ['label' => 'Pre ventas APP', 'url' => ['/tpv/pre-venta/index'] ];
 
 			if(Yii::$app->user->can('ventaView'))
-				$tpvPrecaptura[] = ['label' => 'Ventas', 'url' => ['/tpv/venta/index'] ];
+				$tpvPrecaptura[] = ['label' => 'Remisiones', 'url' => ['/tpv/venta/index'] ];
 
+			if(Yii::$app->user->can('ventaView'))
+				$tpvPrecaptura[] = ['label' => 'Facturas', 'url' => ['/tpv/remision/index'] ];
 
+			if(Yii::$app->user->can('configuracionSitio'))
+				$tpvPrecaptura[] = ['label' => 'Tipo de cambio USD', 'url' => ['/configuracion/tipo-cambio/index']];
 
 
 			if(Yii::$app->user->can('precapturaView') || Yii::$app->user->can('ventaView'))
@@ -298,6 +302,7 @@ class NiftyComponent extends Component{
 
 			if(Yii::$app->user->can('configuracionSitio'))
 				$adminConfig[] = ['label' => 'Configuracion del sitio', 'url' => ['/admin/configuracion/configuracion-update']];
+
 
 			if(!empty($adminConfig))
 				$admin[] = ['label' => '<i class="fa fa-cogs"></i><span class="nav-label">Configuraciones </span> <span class="fa arrow"></span>', 'url' => '#', 'items' => $adminConfig,'submenuTemplate' => "\n<ul class='nav nav-second-level'>\n{items}\n</ul>\n"];

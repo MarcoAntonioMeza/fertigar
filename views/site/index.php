@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use kartik\daterange\DateRangePicker;
 use app\models\esys\EsysListaDesplegable;
 use app\assets\HighchartsAsset;
+use app\models\catalogo\TipoCambio;
 use app\models\sucursal\Sucursal;
 
 HighchartsAsset::register($this);
@@ -26,8 +27,11 @@ $bttUrl       = Url::to(['venta-producto-json-btt']);
 
 <div class="wrapper wrapper-content">
     <?php if (Yii::$app->user->can('admin')): ?>
-    <div class="ibox">
-        <div class="ibox-content">
+        <div class="ibox">
+            <div class="ibox-content">
+            <div class="float-right">
+                <?= Html::a("<h4>TIPO DE CAMBIO DLLS [ ". date('d/m/Y'). "] : &nbsp;". number_format(TipoCambio::getTipoCambio() ,2). " MXN</h4></a>", [ '/configuracion/tipo-cambio/index' ]) ?>
+            </div>
             <h5>PRODUCTOS - MAS VENDIDOS</h5>
             <div class="row">
                 <div class="col-sm-12">

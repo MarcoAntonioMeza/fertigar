@@ -17,41 +17,44 @@
         };
     });
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Para formularios
-    document.querySelectorAll("form").forEach(function (form) {
-        form.addEventListener("submit", function (e) {
-            const submitButton = form.querySelector(".btn-loading");
-            if (submitButton) {
-                mostrarSpinner(submitButton);
+    
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Para formularios
+        document.querySelectorAll("form").forEach(function (form) {
+            form.addEventListener("submit", function (e) {
+                const submitButton = form.querySelector(".btn-loading");
+                if (submitButton) {
+                    mostrarSpinner(submitButton);
+                }
+            });
+        });
+
+        // Para botones/enlaces fuera de formularios
+        document.querySelectorAll(".btn-loading").forEach(function (button) {
+            // Evita aplicar doble evento si ya está dentro de un form
+            if (!button.closest("form")) {
+                button.addEventListener("click", function (e) {
+                    mostrarSpinner(button);
+                });
             }
         });
-    });
 
-    // Para botones/enlaces fuera de formularios
-    document.querySelectorAll(".btn-loading").forEach(function (button) {
-        // Evita aplicar doble evento si ya está dentro de un form
-        if (!button.closest("form")) {
-            button.addEventListener("click", function (e) {
-                mostrarSpinner(button);
-            });
+        function mostrarSpinner(button) {
+            if (button.disabled) return; // evita doble clic
+            button.disabled = true;
+            const originalText = button.innerHTML;
+            button.dataset.originalText = originalText;
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Cargando...`;
+
+            // Revertir después de 3 segundos (solo si es necesario, útil en botones que no redirigen)
+            setTimeout(() => {
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText;
+            }, 3000);
         }
     });
-
-    function mostrarSpinner(button) {
-        if (button.disabled) return; // evita doble clic
-        button.disabled = true;
-        const originalText = button.innerHTML;
-        button.dataset.originalText = originalText;
-        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Cargando...`;
-
-        // Revertir después de 3 segundos (solo si es necesario, útil en botones que no redirigen)
-        setTimeout(() => {
-            button.disabled = false;
-            button.innerHTML = button.dataset.originalText;
-        }, 3000);
-    }
-});
 
 // Is Int and Float
     function isInt(n){
@@ -474,6 +477,58 @@ function MyBttBuilder2(params) {
         }
     };
 
+    var toast2 = function(title, message, tipo){
+
+        if (tipo == 'warning')
+            swal({
+                title: title,
+                type: tipo,
+                text: message
+            });
+
+        if (tipo == 'success')
+            swal({
+                title: title,
+                type: tipo,
+                text: message
+            });
+
+        if (tipo == 'error')
+            swal({
+                title: title,
+                type: tipo,
+                text: message
+            });
+    }
+
+
+    var toast2Bold = function(title, message, tipo){
+
+        if (tipo == 'warning')
+            swal({
+                title: title,
+                type: tipo,
+                html: true,
+                text : '<strong style="font-size: 16px;font-weight: 700;color: #000;">'+ message +'</strong>'
+            });
+
+        if (tipo == 'success')
+            swal({
+                title: title,
+                type: tipo,
+                html: true,
+                text : '<strong style="font-size: 16px;font-weight: 700;color: #000;">'+ message +'</strong>'
+            });
+
+        if (tipo == 'danger')
+            swal({
+                title: title,
+                type: tipo,
+                html: true,
+                text : '<strong style="font-size: 16px;font-weight: 700;color: #000;">'+ message +'</strong>'
+            });
+    }
+
 
     var show_loader = function(){
         $('body').append('<div  id="page_loader" style="opacity: .8;z-index: 2040 !important;    position: fixed;top: 0;left: 0;z-index: 1040;width: 100vw;height: 100vh;background-color: #000;"><div class="spiner-example" style="position: fixed;top: 50%;left: 0;z-index: 2050 !important; width: 100%;height: 100%;"><div class="sk-spinner sk-spinner-three-bounce"><div class="sk-bounce1"></div><div class="sk-bounce2"></div><div class="sk-bounce3"></div></div></div></div>');
@@ -528,19 +583,11 @@ function MyBttBuilder2(params) {
             },
         },
         status : {
-            opt_a : function (value) {
-                if(value == 10) return '<span style="color:#177F75;font-weight: 900;">Habilitada</span>';
-
-                if(value == 1) return '<span style="color:#FF8362;font-weight: 900;">Deshabilitada</span>';
-
-                if(value == 0) return '<span style="color:#D23641;font-weight: 900;">Eliminada</span>';
-
-                else return value;
-            },
+             
             opt_o : function (value) {
-                if(value == 10) return '<span style="color:#177F75;font-weight: 900;">Habilitado</span>';
+                if(value == 10) return '<span style="color:#177F75;font-weight: 900;">Activo</span>';
 
-                if(value == 1) return '<span style="color:#FF8362;font-weight: 900;">Deshabilitado</span>';
+                if(value == 1) return '<span style="color:#FF8362;font-weight: 900;">Inactivo</span>';
 
                 if(value == 0) return '<span style="color:#D23641;font-weight: 900;">Eliminado</span>';
 

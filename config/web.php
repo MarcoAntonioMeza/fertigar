@@ -37,6 +37,9 @@ $config = [
         'tpv' => [
             'class' => 'app\modules\tpv\Module',
         ],
+        'configuracion' => [
+            'class' => 'app\modules\configuracion\Module',
+        ],
         'sucursales' => [
             'class' => 'app\modules\sucursales\Module',
         ],
