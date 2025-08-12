@@ -254,21 +254,21 @@ class Producto extends \yii\db\ActiveRecord
             $precio_base = 0;
             switch ($list_precio) {
                 case Cliente::TIPO_LISTA_PRECIO_PUBLICO:
-                    $precio_base = $producto['precio_publico'];
+                    $precio_base = floatval($producto['precio_publico']);
                     break;
                 case Cliente::TIPO_LISTA_PRECIO_MAYOREO:
-                    $precio_base = $producto['precio_mayoreo'];
+                    $precio_base = floatval($producto['precio_mayoreo']);
                     break;
                 case Cliente::TIPO_LISTA_PRECIO_SUBDIS:
-                    $precio_base = $producto['precio_sub'];
+                    $precio_base = floatval($producto['precio_sub']);
                     break;
                 default:
-                    $precio_base = $producto['precio_publico'];
+                    $precio_base = floatval($producto['precio_publico']);
             }
 
             // Calcular IVA e IEPS como porcentaje sobre el precio base
-            $iva = isset($producto['iva']) ? ($precio_base * $producto['iva'] / 100) : 0;
-            $ieps = isset($producto['ieps']) ? ($precio_base * $producto['ieps'] / 100) : 0;
+            $iva = isset($producto['iva']) ? round(($precio_base * $producto['iva'] / 100),2) : 0;
+            $ieps = isset($producto['ieps']) ? round(($precio_base * $producto['ieps'] / 100),2) : 0;
             $precio = $precio_base + $iva + $ieps;
 
             $array_productos[] = [
@@ -280,7 +280,7 @@ class Producto extends \yii\db\ActiveRecord
                 'stock' => $producto['cantidad'],
                 'precio' => $precio,
                 'precio_base' => $precio_base,
-                'descripcion' => $producto['nombre'] . ' (' . $producto['clave'] . ') - ' . $producto['unidad_medida'] . ' - $' . number_format($precio, 2) . ' (IVA: $' . number_format($iva, 2) . ', IEPS: $' . number_format($ieps, 2) . ') - ' . $producto['cantidad'] . ' disponibles',
+                'descripcion' => $producto['nombre'] . ' (' . $producto['clave'] . ') - ' . $producto['unidad_medida'] . ' - $' . number_format($precio_base, 2) . ' (IVA: $' . number_format($iva, 2) . ', IEPS: $' . number_format($ieps, 2) . ') - ' . $producto['cantidad'] . ' disponibles',
             ];
         }
 

@@ -466,7 +466,21 @@ class AppController extends Controller
 
                     [
                         'controllers' => ['tpv/venta'],
-                        'actions' => ['index', 'ventas-json-btt', 'view', 'imprimir-ticket', 'imprimir-ticket-retiro', 'imprimir-credito', 'get-token-ventas', 'ruta-view', 'imprimir-acuse-pdf', 'cliente-ajax', 'venta-info', 'imprimir-ticket-entrega'],
+                        'actions' => [
+                            'index',
+                            'ventas-json-btt',
+                            'view',
+                            'imprimir-ticket',
+                            'imprimir-ticket-retiro',
+                            'imprimir-credito',
+                            'get-token-ventas',
+                            'ruta-view',
+                            'imprimir-acuse-pdf',
+                            'cliente-ajax',
+                            'venta-info',
+                            'imprimir-ticket-entrega',
+                            'imprimir-pagare-ticket'
+                        ],
                         'allow' => true,
                         'roles' => ['ventaView'],
                     ],

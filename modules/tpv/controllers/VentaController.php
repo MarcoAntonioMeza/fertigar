@@ -162,15 +162,9 @@ class VentaController extends \app\controllers\AppController
         $count_ventas = VentaDetalle::find()->where(['venta_id' => $ids])->count();
         $model_detalle_venta = VentaDetalle::find()->where(['venta_id' => $ids])->all();
 
-        //        $model = $this->findModel($id);
         $lengh = 270;
         $width = 80;
-        $count = 0;
-        $total_piezas = 0;
-
-        $lengh = $lengh + ($count_ventas  * 40);
-
-        //$width= $width + ($count_ventas  * 2 );
+        $lengh = $lengh + ($count_ventas * 40);
 
         $content = $this->renderPartial('ticket', ["model" => $model, "model_detalle_venta" => $model_detalle_venta, 'id' => $id]);
 
@@ -179,8 +173,55 @@ class VentaController extends \app\controllers\AppController
         $pdf = new Pdf([
             // set to use core fonts only
             'mode' => Pdf::MODE_CORE,
-            // A4 paper format
-            'format' => array($width, $lengh), //Pdf::FORMAT_A4,
+            // Custom ticket size
+            'format' => array($width, $lengh),
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
+            // any css to be embedded if required
+            'cssInline' => '.kv-heading-1{font-size:18px}',
+            // set mPDF properties on the fly
+            'options' => ['title' => 'Ticket'],
+            // call mPDF methods on the fly
+            'methods' => [
+                //'SetHeader'=>[ 'TICKET #' . $model->id],
+                //'SetFooter'=>['{PAGENO}'],
+            ]
+        ]);
+
+        $pdf->marginLeft = 0.5;
+        $pdf->marginRight = 0.5;
+
+        // return the pdf output as per the destination setting
+        return $pdf->render();
+    }
+
+
+
+     public function actionImprimirPagareTicket($id)
+    {
+        $venta_model = $this->findModel($id);
+        $ids = explode(",", $id);
+
+        $model = Venta::find()->with('ventaDetalle')->where(['id' => $ids])->all();
+        $count_ventas = VentaDetalle::find()->where(['venta_id' => $ids])->count();
+        $model_detalle_venta = VentaDetalle::find()->where(['venta_id' => $ids])->all();
+
+        $content = $this->renderPartial('ticket_pagare', ["model" => $model, "model_detalle_venta" => $model_detalle_venta, 'id' => $id, 'venta_model' => $venta_model]);
+
+        ini_set('memory_limit', '-1');
+
+        $pdf = new Pdf([
+            // set to use core fonts only
+            'mode' => Pdf::MODE_CORE,
+            // Letter paper format
+            'format' => Pdf::FORMAT_LETTER,
             // portrait orientation
             'orientation' => Pdf::ORIENT_PORTRAIT,
             // stream to browser inline
@@ -201,12 +242,13 @@ class VentaController extends \app\controllers\AppController
             ]
         ]);
 
-        $pdf->marginLeft = 0.5;
-        $pdf->marginRight = 0.5;
+        $pdf->marginLeft = 10;
+        $pdf->marginRight = 10;
 
         // return the pdf output as per the destination setting
         return $pdf->render();
     }
+
 
 
     public function actionImprimirTicketEntrega($id)
@@ -1769,9 +1811,15 @@ class VentaController extends \app\controllers\AppController
             $model = new Venta();
 
             $total = 0;
+            $iva_global = 0;
+            $ieps_global = 0;
+            $total_impuestos = 0;
             foreach ($carrito as $item) {
                 $total += $item['precio'] * $item['cantidad'];
+                $iva_global += $item['iva'] * $item['cantidad']; // Suponiendo un IVA del 16%
+                $ieps_global += $item['ieps'] * $item['cantidad']; // Suponiendo un IEPS del 8%
             }
+            $total_impuestos = $iva_global + $ieps_global + $total;
 
             $model->sucursal_id = $sucursal_id;
             $model->cliente_id = $cliente_id;
@@ -1780,7 +1828,10 @@ class VentaController extends \app\controllers\AppController
             $model->is_especial = Venta::VENTA_GENERAL;
 
             $model->status = Venta::STATUS_VENTA;
-            $model->total = $total;
+            $model->total = $total_impuestos;
+            $model->iva = $iva_global;
+            $model->ieps = $ieps_global;
+            $model->subtotal = $total;
 
             if ($model->save()) {
                 foreach ($carrito as $item) {
@@ -1792,6 +1843,9 @@ class VentaController extends \app\controllers\AppController
                     $venta_producto->producto_id = $item['id'];
                     $venta_producto->cantidad = $item['cantidad'];
                     $venta_producto->precio_venta = $item['precio'];
+                    $venta_producto->iva = $item['iva'] * $item['cantidad'];
+                    $venta_producto->ieps = $item['ieps'] * $item['cantidad'];
+                    $venta_producto->precio_impuestos = $item['precio'] + $item['iva'] + $item['ieps']; // Suponiendo un IVA del 16% y un IEPS del 8%
                     $venta_producto->is_reparto_entrega = 20;
                     $venta_producto->is_conversion = 20;
                     $venta_producto->apply_bodega = 20;
