@@ -46,15 +46,34 @@ $cobroTotal = 0;
                 <div class="panel-body text-center">
                     <div class="row">
                         <div class="col">
-                            <div class=" m-l-md">
-                            <span class="h3 font-bold m-t block"> <?= number_format($model->total,2)  ?></span>
-                            <small class="h5 m-b block">TOTAL VENTA</small>
-                            </div>
-                        </div>
-                        <div class="col">
                             <span class="h3 font-bold m-t block"> <?= $model->getTotalUnidades()  ?></span>
                             <small class="h5  m-b block">UNIDADES</small>
                         </div>
+                        <div class="col">
+                            <div class=" m-l-md">
+                            <span class="h3 font-bold m-t block">$ <?= number_format($model->subtotal,2)  ?></span>
+                            <small class="h5 m-b block">SUBTOTAL VENTA</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class=" m-l-md">
+                            <span class="h3 font-bold m-t block">$ <?= number_format($model->iva,2)  ?></span>
+                            <small class="h5 m-b block">IVA</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class=" m-l-md">
+                            <span class="h3 font-bold m-t block">$ <?= number_format($model->ieps,2)  ?></span>
+                            <small class="h5 m-b block">IEPS</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class=" m-l-md">
+                            <span class="h3 font-bold m-t block">$ <?= number_format($model->total,2)  ?></span>
+                            <small class="h5 m-b block">TOTAL VENTA</small>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -196,8 +215,10 @@ $cobroTotal = 0;
                                     <th class="min-col text-center text-uppercase">PRODUCTO</th>
                                     <th class="min-col text-center text-uppercase">CANTIDAD</th>
                                     <th class="min-col text-center text-uppercase">U.M</th>
+                                    <th class="min-col text-center text-uppercase">IVA</th>
+                                    <th class="min-col text-center text-uppercase">IEPS</th>
                                     <th class="min-col text-center text-uppercase">COSTO</th>
-                                    <th class="min-col text-center text-uppercase">REPARTO</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody  style="text-align: center;">
@@ -206,20 +227,9 @@ $cobroTotal = 0;
                                         <td><?= Html::a( $item->producto->nombre . "[" . $item->producto->clave . "]" , ["/inventario/arqueo-inventario/view", "id" => $item->producto_id ], ["class" => "", "target" => "_blank"])  ?> </td>
                                         <td><?= $item->cantidad  ?>        </td>
                                         <td><?= $item->producto->unidadMedida->nombre ?? '--'  ?> </td>
-                                        <td><?= $item->precio_venta ? number_format($item->precio_venta,2) : 0 ?> </td>
-                                        <td>
-                                            <?php if ($item->repartoAdd): ?>
-                                                <?php foreach ($item->repartoAdd as $key => $reparto): ?>
-                                                     <li><a href="<?= Url::to([ '/logistica/ruta/view', 'id' => $reparto->reparto_id ]) ?>"><?=  '['. $reparto->reparto_id . ' - '. date("Y-m-d", $reparto->created_at) .']'  ?></a></li>
-                                                <?php endforeach ?>
-                                            <?php else: ?>
-                                                <?php if ($model->reparto_id && $model->status == Venta::STATUS_VENTA): ?>
-                                                    *VENTA EN REPARTO*
-                                                <?php else: ?>
-                                                    N/A
-                                                <?php endif ?>
-                                            <?php endif ?>
-                                        </td>
+                                        <td><?= $item->iva ? number_format($item->iva,2) : 0 ?> </td>
+                                        <td><?= $item->ieps ? number_format($item->ieps,2) : 0 ?> </td>
+                                        <td><?= $item->precio_venta ? number_format($item->precio_venta * $item->cantidad,2) : 0 ?> </td>
                                     </tr>
 
                                 <?php endforeach ?>
@@ -245,7 +255,7 @@ $cobroTotal = 0;
 
             
 
-            <iframe width="100%" class="panel" height="500px" src="<?= Url::to(['imprimir-ticket', 'id' => $model->id ])  ?>"></iframe>
+            <iframe width="100%" class="panel" height="500px" src="<?= Url::to(['imprimir-pagare-ticket', 'id' => $model->id ])  ?>"></iframe>
 
             <div class="panel">
                 <?= Html::a('Imprimir Ticket', false, ['class' => 'btn btn-warning btn-lg btn-block', 'id' => 'imprimir-ticket','style'=>'    padding: 6%;'])?>

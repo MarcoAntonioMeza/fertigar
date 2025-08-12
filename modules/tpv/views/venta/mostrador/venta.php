@@ -1,9 +1,7 @@
 <?php
-
 use app\models\cobro\CobroVenta;
-use yii\helpers\Html;
 use kartik\select2\Select2;
-use yii\widgets\ActiveForm;
+
 ?>
 <div id="punto-cobro-app">
     <div class="panel panel-primary shadow-lg" style="border-radius: 20px; overflow: hidden; min-height: 90vh;">
@@ -72,12 +70,7 @@ use yii\widgets\ActiveForm;
                             </div>
                             <div class="col-md-8 mb-2">
                                 <label><b>Buscar producto</b></label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" v-model="productoBusqueda" placeholder="Nombre, clave...">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-primary" @click="buscarProductosAjax(productoBusqueda)"><i class="fa fa-search"></i> Buscar</button>
-                                    </div>
-                                </div>
+                                <input type="text" class="form-control" v-model="productoBusqueda" placeholder="Nombre, clave..." @input="buscarProductosAjax(productoBusqueda)">
                                 <ul v-if="productosFiltrados.length && productoBusqueda" class="list-group mt-1" style="max-height: 220px; overflow-y: auto;">
                                     <li v-for="p in productosFiltrados" :key="p.id" class="list-group-item list-group-item-action" @click="seleccionarProducto(p)">
                                         {{ p.nombre }} <span v-if="p.clave">[{{ p.clave }}]</span>
@@ -137,9 +130,9 @@ use yii\widgets\ActiveForm;
                                             <td>{{ item.nombre }}</td>
                                             <td>{{ formatNumber(item.cantidad) }}</td>
                                             <td>{{ simboloMoneda }}{{ formatNumber(item.precio, 2) }}</td>
-                                            <td>{{ formatNumber(item.iva, 2) }}</td>
-                                            <td>{{ formatNumber(item.ieps, 2) }}</td>
-                                            <td>{{ simboloMoneda }}{{ formatNumber(item.cantidad * item.precio, 2) }}</td>
+                                            <td>{{ formatNumber((item.iva * item.cantidad), 2) }}</td>
+                                            <td>{{ formatNumber((item.ieps * item.cantidad), 2) }}</td>
+                                            <td>{{ simboloMoneda }}{{ formatNumber((item.cantidad * item.precio) + (item.iva * item.cantidad) + (item.ieps * item.cantidad), 2) }}</td>
                                             <td><button class="btn btn-danger btn-xs" @click="quitarProducto(idx)">Quitar</button></td>
                                         </tr>
                                     </tbody>
@@ -379,7 +372,9 @@ use yii\widgets\ActiveForm;
             productoSeleccionado: null,
             nuevoProducto: {
                 cantidad: 1,
-                precio: 0
+                precio: 0,
+                iva: 0,
+                ieps: 0,
             },
             carrito: [],
             moneda: 'MXN',
@@ -417,7 +412,7 @@ use yii\widgets\ActiveForm;
                 return this.productosAjax.length ? this.productosAjax : [];
             },
             totalCarrito() {
-                return this.carrito.reduce((acc, item) => acc + (item.cantidad * item.precio), 0).toFixed(2);
+                return this.carrito.reduce((acc, item) => acc + ((item.cantidad * item.precio) + (item.iva * item.cantidad) + (item.ieps * item.cantidad)), 0).toFixed(2);
             },
             simboloMoneda() {
                 return this.moneda === 'MXN' ? '$' : 'US$';
@@ -474,7 +469,9 @@ use yii\widgets\ActiveForm;
                 this.productoBusqueda = producto.nombre;
                 this.nuevoProducto = {
                     cantidad: 1,
-                    precio: parseFloat(producto.precio) || 0
+                    precio: parseFloat(producto.precio_base) || 0,
+                    iva: parseFloat(producto.iva) || 0,
+                    ieps: parseFloat(producto.ieps) || 0
                 };
             },
             agregarProducto() {
@@ -493,7 +490,8 @@ use yii\widgets\ActiveForm;
                     cantidad: this.nuevoProducto.cantidad,
                     iva: this.productoSeleccionado.iva || 0,
                     ieps: this.productoSeleccionado.ieps || 0,
-                    precio: this.nuevoProducto.precio
+                    precio: this.nuevoProducto.precio,
+                    precio_base: this.productoSeleccionado.precio_base || 0,
                 });
                 this.productoSeleccionado = null;
                 this.productoBusqueda = '';
@@ -541,6 +539,10 @@ use yii\widgets\ActiveForm;
                 });
             },
             buscarProductosAjax(q) {
+                if(q.length < 3) {
+                    
+                    return;
+                }
                 var self = this;
                 var clienteId = self.clienteSeleccionado ? self.clienteSeleccionado.id : null;
                 self.productosLoading = true;
@@ -563,6 +565,13 @@ use yii\widgets\ActiveForm;
                 if (!this.puedeGuardar) return;
                 this.guardando = true;
 
+                console.log('Guardando venta:', {
+                    carrito: this.carrito,
+                    pagos: this.pagos,
+                    cliente_id: this.clienteSeleccionado ? this.clienteSeleccionado.id : null,
+                });
+                //return;
+
                 $.post('<?= \yii\helpers\Url::to(['guardar-venta']); ?>', {
                     carrito: this.carrito,
                     pagos: this.pagos,
@@ -577,6 +586,7 @@ use yii\widgets\ActiveForm;
 
                     setTimeout(() => {
                         this.guardando = false;
+                        
                         //alert('Venta guardada correctamente.');
                         window.location.href = '<?= \yii\helpers\Url::to(['view', 'id' => '']); ?>' + data.id;
                         // Aquí podrías limpiar el formulario si lo deseas
