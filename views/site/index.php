@@ -30,7 +30,7 @@ $bttUrl       = Url::to(['venta-producto-json-btt']);
         <div class="ibox">
             <div class="ibox-content">
             <div class="float-right">
-                <?= Html::a("<h4>TIPO DE CAMBIO [ ". date('d/m/Y'). "] : &nbsp;". number_format(TipoCambio::getTipoCambio() ,2). " MXN</h4></a>", [ '/configuracion/tipo-cambio/index' ]) ?>
+                <?= Html::a("<h4>TIPO DE CAMBIO DLLS [ ". date('d/m/Y'). "] : &nbsp;". number_format(TipoCambio::getTipoCambio() ,2). " MXN</h4></a>", [ '/configuracion/tipo-cambio/index' ]) ?>
             </div>
             <h5>PRODUCTOS - MAS VENDIDOS</h5>
             <div class="row">
