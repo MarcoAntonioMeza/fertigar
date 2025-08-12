@@ -1823,6 +1823,9 @@ class VentaController extends \app\controllers\AppController
 
             $model->sucursal_id = $sucursal_id;
             $model->cliente_id = $cliente_id;
+            $model->moneda = $post['moneda'] ?? Venta::MONEDA_MXN;
+            $model->tipo_cambio = $post['tipo_cambio'] ?? 1;
+            $model->nota_cancelacion = $post['observaciones'] ?? null;
             $model->tipo = Venta::TIPO_GENERAL;
             $model->is_tpv_ruta = Venta::IS_TPV_RUTA_OFF;
             $model->is_especial = Venta::VENTA_GENERAL;

@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -9,7 +10,7 @@ use app\models\producto\Producto;
 use app\models\cobro\CobroVenta;
 
 
-$this->title = "Folio #" . str_pad($model->id,6,"0",STR_PAD_LEFT);
+$this->title = "Folio #" . str_pad($model->id, 6, "0", STR_PAD_LEFT);
 
 $this->params['breadcrumbs'][] = ['label' => 'Tpv', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $model->id;
@@ -20,7 +21,7 @@ $cobroTotal = 0;
 <div class="tpv-pre-captura-view">
 
     <div class="alert alert-warning">
-        <h5 ><?= Venta::$statusList[$model->status] ?></h5>
+        <h5><?= Venta::$statusList[$model->status] ?></h5>
     </div>
     <div class="row">
         <div class="col-md-9">
@@ -32,17 +33,35 @@ $cobroTotal = 0;
                     <?= DetailView::widget([
                         'model' => $model,
                         'attributes' => [
-                             [
-                                 'attribute' => 'CLIENTE',
-                                 'format'    => 'raw',
-                                 'value'     =>  isset($model->cliente->id) ?  Html::a($model->cliente->nombre ." ". $model->cliente->apellidos , ['/crm/cliente/view', 'id' => $model->cliente->id], ['class' => 'text-primary']) : ' *** PUBLICO EN GENERAL **' ,
-                             ]
+                            [
+                                'attribute' => 'CLIENTE',
+                                'format'    => 'raw',
+                                'value'     =>  isset($model->cliente->id) ?  Html::a($model->cliente->nombre . " " . $model->cliente->apellidos, ['/crm/cliente/view', 'id' => $model->cliente->id], ['class' => 'text-primary']) : ' *** PUBLICO EN GENERAL **',
+                            ]
                         ],
                     ]) ?>
                 </div>
             </div>
-
             <div class="panel">
+                <div class="panel-body text-center">
+                    <div class="row">
+                        <div class="col">
+                            <span class="h3 font-bold m-t block"> <?= $model->moneda ?></span>
+                            <small class="h5  m-b block">MONEDA</small>
+                        </div>
+                        <?php if (strtoupper($model->moneda) !== 'MXN'): ?>
+                        <div class="col">
+                            <div class=" m-l-md">
+                                <span class="h3 font-bold m-t block"> <?= number_format($model->tipo_cambio, 2)  ?></span>
+                                <small class="h5 m-b block">TIPO DE CAMBIO</small>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+
+
                 <div class="panel-body text-center">
                     <div class="row">
                         <div class="col">
@@ -51,29 +70,29 @@ $cobroTotal = 0;
                         </div>
                         <div class="col">
                             <div class=" m-l-md">
-                            <span class="h3 font-bold m-t block">$ <?= number_format($model->subtotal,2)  ?></span>
-                            <small class="h5 m-b block">SUBTOTAL VENTA</small>
+                                <span class="h3 font-bold m-t block">$ <?= number_format($model->subtotal, 2)  ?></span>
+                                <small class="h5 m-b block">SUBTOTAL VENTA</small>
                             </div>
                         </div>
                         <div class="col">
                             <div class=" m-l-md">
-                            <span class="h3 font-bold m-t block">$ <?= number_format($model->iva,2)  ?></span>
-                            <small class="h5 m-b block">IVA</small>
+                                <span class="h3 font-bold m-t block">$ <?= number_format($model->iva, 2)  ?></span>
+                                <small class="h5 m-b block">IVA</small>
                             </div>
                         </div>
                         <div class="col">
                             <div class=" m-l-md">
-                            <span class="h3 font-bold m-t block">$ <?= number_format($model->ieps,2)  ?></span>
-                            <small class="h5 m-b block">IEPS</small>
+                                <span class="h3 font-bold m-t block">$ <?= number_format($model->ieps, 2)  ?></span>
+                                <small class="h5 m-b block">IEPS</small>
                             </div>
                         </div>
                         <div class="col">
                             <div class=" m-l-md">
-                            <span class="h3 font-bold m-t block">$ <?= number_format($model->total,2)  ?></span>
-                            <small class="h5 m-b block">TOTAL VENTA</small>
+                                <span class="h3 font-bold m-t block">$ <?= number_format($model->total, 2)  ?></span>
+                                <small class="h5 m-b block">TOTAL VENTA</small>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
@@ -86,13 +105,13 @@ $cobroTotal = 0;
                         </div>
                         <div class="col-8 text-right">
                             <span> SE GENERO UNA DEVOLUCION DE ESTA VENTA </span>
-                            <h2 class="font-bold"><?= Html::a("#".$model->devolucion_transaccion_id, ["/inventario/devolucion/view", "id" => $model->devolucion_transaccion_id], ["target" => "_blank"]) ?></h2>
+                            <h2 class="font-bold"><?= Html::a("#" . $model->devolucion_transaccion_id, ["/inventario/devolucion/view", "id" => $model->devolucion_transaccion_id], ["target" => "_blank"]) ?></h2>
                         </div>
                     </div>
                 </div>
             <?php endif ?>
 
-            <?php if ($model->is_tpv_ruta == Venta::IS_TPV_RUTA_ON ): ?>
+            <?php if ($model->is_tpv_ruta == Venta::IS_TPV_RUTA_ON): ?>
                 <div class="widget style2 lazur-bg">
                     <div class="row">
                         <div class="col-4">
@@ -100,13 +119,13 @@ $cobroTotal = 0;
                         </div>
                         <div class="col-8 text-right">
                             <span> VENTA REALIZADA EN RUTA </span>
-                            <h2 class="font-bold"><?= Html::a($model->sucursalVende->nombre, ["/logistica/ruta/view", "id" => $model->reparto_id], ["target" => "_blank","class" => "btn-link",]) ?> </h2>
+                            <h2 class="font-bold"><?= Html::a($model->sucursalVende->nombre, ["/logistica/ruta/view", "id" => $model->reparto_id], ["target" => "_blank", "class" => "btn-link",]) ?> </h2>
                         </div>
                     </div>
                 </div>
             <?php endif ?>
 
-            <?php if ( $model->reparto_id && $model->is_tpv_ruta == Venta::IS_TPV_RUTA_OFF && $model->status == Venta::STATUS_VENTA ): ?>
+            <?php if ($model->reparto_id && $model->is_tpv_ruta == Venta::IS_TPV_RUTA_OFF && $model->status == Venta::STATUS_VENTA): ?>
                 <div class="widget style1 navy-bg">
                     <div class="row">
                         <div class="col-4">
@@ -122,52 +141,52 @@ $cobroTotal = 0;
 
 
             <?php if ($model->transaccion): ?>
-            <div class="ibox">
-                <div class="ibox-title">
-                    <h3>TRANSACCION DEL PAGO</h3>
-                </div>
-                <div class="ibox-content">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center;">OPERACION</th>
-                                <th style="text-align: center;">FECHA DE PAGO</th>
-                                <th style="text-align: center;">CAJERO / EMPLEADO</th>
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h3>TRANSACCION DEL PAGO</h3>
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">OPERACION</th>
+                                    <th style="text-align: center;">FECHA DE PAGO</th>
+                                    <th style="text-align: center;">CAJERO / EMPLEADO</th>
 
-                            </tr>
-                        </thead>
-                        <tbody  style="text-align: center;">
+                                </tr>
+                            </thead>
+                            <tbody style="text-align: center;">
                             <tbody>
                                 <?php foreach ($model->transaccion as $key => $item_tra): ?>
                                     <tr>
                                         <td class="text-center">
-                                            <?= Html::a($item_tra->token_pay, null, [ "class" => "text-link","data-target" => "#modal-nota-ventas", "data-toggle" => "modal", 'onclick' => 'onGetVentas(' . $item_tra->id. ')'  ] ) ?>
-                                        <td class="text-center"><?= date("Y-m-d",$item_tra->created_at) ?></td>
+                                            <?= Html::a($item_tra->token_pay, null, ["class" => "text-link", "data-target" => "#modal-nota-ventas", "data-toggle" => "modal", 'onclick' => 'onGetVentas(' . $item_tra->id . ')']) ?>
+                                        <td class="text-center"><?= date("Y-m-d", $item_tra->created_at) ?></td>
                                         <td class="text-center"><?= $item_tra->createdBy->nombreCompleto ?></td>
                                     </tr>
                                 <?php endforeach ?>
                             </tbody>
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
             <?php else: ?>
-            <div class="ibox">
-                <div class="ibox-title">
-                    <h3 >Cobros realizado</h3>
-                </div>
-                <div class="ibox-content">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center;">Tipo</th>
-                                <th style="text-align: center;">Metodo de pago</th>
-                                <th style="text-align: center;">Cobro</th>
-                                
-                            </tr>
-                        </thead>
-                        <tbody  style="text-align: center;">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h3>Cobros realizado</h3>
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">Tipo</th>
+                                    <th style="text-align: center;">Metodo de pago</th>
+                                    <th style="text-align: center;">Cobro</th>
+
+                                </tr>
+                            </thead>
+                            <tbody style="text-align: center;">
                             <tbody>
 
                                 <?php foreach ($model->cobroTpvVenta as $key => $item): ?>
@@ -175,12 +194,12 @@ $cobroTotal = 0;
                                         <td class="text-center"><?= CobroVenta::$tipoList[$item->tipo] ?></td>
                                         <td class="text-center">
                                             <?= CobroVenta::$servicioTpvList[$item->metodo_pago] ?>
-                                            <?php if ($item->metodo_pago == CobroVenta::COBRO_OTRO ): ?>
+                                            <?php if ($item->metodo_pago == CobroVenta::COBRO_OTRO): ?>
                                                 <p><strong style="font-size: 16px;color: #000;">CONCEPTO [ <?= $item->nota_otro ?> ]</strong></p>
                                             <?php endif ?>
                                         </td>
-                                        <td class="text-center"><?= number_format($item->cantidad,2) ?></td>
-                                       
+                                        <td class="text-center"><?= number_format($item->cantidad, 2) ?></td>
+
                                         <?php $cobroTotal =  $cobroTotal + $item->cantidad; ?>
 
                                     </tr>
@@ -189,47 +208,47 @@ $cobroTotal = 0;
                             <tfoot>
                                 <tr>
                                     <td style="font-size: 17px" class="text-right text-main text-semibold " colspan="2">TOTAL</td>
-                                    <td style="font-size: 17px"><?= number_format($model->total,2) ?></td>
+                                    <td style="font-size: 17px"><?= number_format($model->total, 2) ?></td>
                                 </tr>
                                 <tr>
                                     <td style="font-size: 17px" class="text-right text-main text-semibold " colspan="2">PAGADO</td>
-                                    <td style="font-size: 17px"><?= number_format($cobroTotal,2) ?></td>
+                                    <td style="font-size: 17px"><?= number_format($cobroTotal, 2) ?></td>
                                 </tr>
                             </tfoot>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
             <?php endif ?>
 
             <div class="ibox">
                 <div class="ibox-title">
-                    <h3 >Productos relacionados</h3>
+                    <h3>Productos relacionados</h3>
                 </div>
                 <div class="ibox-content">
                     <div class="table-responsive">
                         <table class="table table-bordered invoice-summary">
                             <thead>
                                 <tr class="bg-trans-dark">
-                                    
+
                                     <th class="min-col text-center text-uppercase">PRODUCTO</th>
                                     <th class="min-col text-center text-uppercase">CANTIDAD</th>
                                     <th class="min-col text-center text-uppercase">U.M</th>
                                     <th class="min-col text-center text-uppercase">IVA</th>
                                     <th class="min-col text-center text-uppercase">IEPS</th>
                                     <th class="min-col text-center text-uppercase">COSTO</th>
-                                    
+
                                 </tr>
                             </thead>
-                            <tbody  style="text-align: center;">
+                            <tbody style="text-align: center;">
                                 <?php foreach ($model->ventaDetalle as $key => $item): ?>
                                     <tr>
-                                        <td><?= Html::a( $item->producto->nombre . "[" . $item->producto->clave . "]" , ["/inventario/arqueo-inventario/view", "id" => $item->producto_id ], ["class" => "", "target" => "_blank"])  ?> </td>
-                                        <td><?= $item->cantidad  ?>        </td>
+                                        <td><?= Html::a($item->producto->nombre . "[" . $item->producto->clave . "]", ["/inventario/arqueo-inventario/view", "id" => $item->producto_id], ["class" => "", "target" => "_blank"])  ?> </td>
+                                        <td><?= $item->cantidad  ?> </td>
                                         <td><?= $item->producto->unidadMedida->nombre ?? '--'  ?> </td>
-                                        <td><?= $item->iva ? number_format($item->iva,2) : 0 ?> </td>
-                                        <td><?= $item->ieps ? number_format($item->ieps,2) : 0 ?> </td>
-                                        <td><?= $item->precio_venta ? number_format($item->precio_venta * $item->cantidad,2) : 0 ?> </td>
+                                        <td><?= $item->iva ? number_format($item->iva, 2) : 0 ?> </td>
+                                        <td><?= $item->ieps ? number_format($item->ieps, 2) : 0 ?> </td>
+                                        <td><?= $item->precio_venta ? number_format($item->precio_venta * $item->cantidad, 2) : 0 ?> </td>
                                     </tr>
 
                                 <?php endforeach ?>
@@ -253,29 +272,29 @@ $cobroTotal = 0;
                 </div>
             </div>
 
-            
 
-            <iframe width="100%" class="panel" height="500px" src="<?= Url::to(['imprimir-pagare-ticket', 'id' => $model->id ])  ?>"></iframe>
+
+            <iframe width="100%" class="panel" height="500px" src="<?= Url::to(['imprimir-pagare-ticket', 'id' => $model->id])  ?>"></iframe>
 
             <div class="panel">
-                <?= Html::a('Imprimir Ticket', false, ['class' => 'btn btn-warning btn-lg btn-block', 'id' => 'imprimir-ticket','style'=>'    padding: 6%;'])?>
+                <?= Html::a('Imprimir Ticket', false, ['class' => 'btn btn-warning btn-lg btn-block', 'id' => 'imprimir-ticket', 'style' => '    padding: 6%;']) ?>
             </div>
 
             <?php if ($model->transaccion): ?>
-            <div class="panel">
-                <?= Html::a('TICKET DE ENTREGA', false, ['class' => 'btn btn-info btn-lg btn-block', 'id' => 'imprimir-ticket-entrega','style'=>'    padding: 6%;'])?>
-            </div>
+                <div class="panel">
+                    <?= Html::a('TICKET DE ENTREGA', false, ['class' => 'btn btn-info btn-lg btn-block', 'id' => 'imprimir-ticket-entrega', 'style' => '    padding: 6%;']) ?>
+                </div>
             <?php endif ?>
 
             <?php if ($can["cancel"]): ?>
-                <?php if (count($model->cobroTpvVenta) > 0 || count($model->transaccion) > 0 ): ?>
+                <?php if (count($model->cobroTpvVenta) > 0 || count($model->transaccion) > 0): ?>
                     <?php if ($model->status == Venta::STATUS_VENTA && !Venta::isVentaRuta($model->id)): ?>
                         <div class="panel">
-                            <?= Html::button('CANCELAR VENTA',  ['class' => 'btn btn-danger btn-lg btn-block', "data-target" => "#modal-cancelacion", "data-toggle" => "modal" ,'style'=>'    padding: 6%;'])?>
+                            <?= Html::button('CANCELAR VENTA',  ['class' => 'btn btn-danger btn-lg btn-block', "data-target" => "#modal-cancelacion", "data-toggle" => "modal", 'style' => '    padding: 6%;']) ?>
                         </div>
-                    <?php elseif($model->status == Venta::STATUS_VENTA && Venta::isVentaRuta($model->id)): ?>
+                    <?php elseif ($model->status == Venta::STATUS_VENTA && Venta::isVentaRuta($model->id)): ?>
                         <div class="panel">
-                            <?= Html::button('CANCELAR VENTA - RUTA',  [ 'id' => 'btnShowCancelVentaMultiple', 'class' => 'btn btn-danger btn-lg btn-block', "data-target" => "#modal-cancelacion-multiple", "data-toggle" => "modal" ,'style'=>'    padding: 6%;'])?>
+                            <?= Html::button('CANCELAR VENTA - RUTA',  ['id' => 'btnShowCancelVentaMultiple', 'class' => 'btn btn-danger btn-lg btn-block', "data-target" => "#modal-cancelacion-multiple", "data-toggle" => "modal", 'style' => '    padding: 6%;']) ?>
                         </div>
                     <?php endif ?>
                 <?php else: ?>
@@ -288,7 +307,7 @@ $cobroTotal = 0;
 
             <?php if (Venta::isPagoCredito($model->id)): ?>
                 <div class="ibox">
-                    <?= Html::a('<i class="fa fa-pencil-square-o mar-rgt-5px"></i> PAGARE',null,['id' => 'reporte_download_acuse','class' => 'btn btn-lg btn-block', 'style'=>'padding: 6%;font-size: 24px; background: #4c0ba7; color: #fff' ])?>
+                    <?= Html::a('<i class="fa fa-pencil-square-o mar-rgt-5px"></i> PAGARE', null, ['id' => 'reporte_download_acuse', 'class' => 'btn btn-lg btn-block', 'style' => 'padding: 6%;font-size: 24px; background: #4c0ba7; color: #fff']) ?>
                 </div>
             <?php endif ?>
 
@@ -301,7 +320,7 @@ $cobroTotal = 0;
 
 
 
-<?= Html::a("Nueva venta",[ '/tpv/venta/create' ],["class" => "btn", "style" => "position: fixed;
+<?= Html::a("Nueva venta", ['/tpv/venta/create'], ["class" => "btn", "style" => "position: fixed;
     top: 0;
     right: 5%;
     font-size: 15px;
@@ -318,11 +337,11 @@ $cobroTotal = 0;
 
 
 
-<div class="fade modal inmodal " id="modal-nota-ventas"  tabindex="-1" role="dialog" aria-labelledby="modal-create-label"  >
-    <div class="modal-dialog modal-lg" >
+<div class="fade modal inmodal " id="modal-nota-ventas" tabindex="-1" role="dialog" aria-labelledby="modal-create-label">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <!--Modal header-->
-             <div class="modal-header">
+            <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title">VENTAS RELACIONADAS</h4>
             </div>
@@ -359,66 +378,66 @@ $cobroTotal = 0;
 </div>
 
 <script>
+    var $reporte_download_acuse = $('#reporte_download_acuse'),
+        venta_id = <?= $model->id ?>;
 
-var $reporte_download_acuse         = $('#reporte_download_acuse'),
-    venta_id                        = <?= $model->id ?>;
-
-$(function(){
-    $('body').addClass('mini-navbar');
-});
-
+    $(function() {
+        $('body').addClass('mini-navbar');
+    });
 
 
-$('#imprimir-ticket').click(function(event){
-    event.preventDefault();
-    window.open("<?= Url::to(['imprimir-ticket', 'id' => $model->id ])  ?>",
-    'imprimir',
-    'width=600,height=500');
-});
 
-$('#imprimir-ticket-entrega').click(function(event){
-    event.preventDefault();
-    window.open("<?= Url::to(['imprimir-ticket-entrega', 'id' => $model->id ])  ?>",
-    'imprimir',
-    'width=600,height=500');
-});
+    $('#imprimir-ticket').click(function(event) {
+        event.preventDefault();
+        window.open("<?= Url::to(['imprimir-ticket', 'id' => $model->id])  ?>",
+            'imprimir',
+            'width=600,height=500');
+    });
+
+    $('#imprimir-ticket-entrega').click(function(event) {
+        event.preventDefault();
+        window.open("<?= Url::to(['imprimir-ticket-entrega', 'id' => $model->id])  ?>",
+            'imprimir',
+            'width=600,height=500');
+    });
 
 
-$reporte_download_acuse.click(function(event){
-    event.preventDefault();
-    window.open('<?= Url::to(['imprimir-acuse-pdf']) ?>?venta_id=' + venta_id,
-        'imprimir',
-        'width=600,height=600');
-});
+    $reporte_download_acuse.click(function(event) {
+        event.preventDefault();
+        window.open('<?= Url::to(['imprimir-acuse-pdf']) ?>?venta_id=' + venta_id,
+            'imprimir',
+            'width=600,height=600');
+    });
 
-var onGetVentas = function( $operacion_id ){
-    $contentVenta.html(null);
-    $.get('<?= Url::to(["get-token-ventas"]) ?>',{ operacion_id : $operacion_id },function($response){
-        if ($response.code == 202 ) {
-            $tempHtml = "";
-            $.each($response.ventas,function(key, item_venta){
-                $tempHtml += "<tr>"+
-                    '<td><a href="<?= Url::to(['/tpv/venta/view']) ?>?id='+ item_venta.id +'" target= "_blank">'+item_venta.folio +'</a></td>'+
-                    "<td>"+ btf.conta.money(item_venta.total) +"</td>"+
-                    "<td>"+item_venta.sucursal +"</td>"+
-                    "<td>"+item_venta.empleado   +"</td>"+
-                    "<td>"+item_venta.created_at +"</td>";
+    var onGetVentas = function($operacion_id) {
+        $contentVenta.html(null);
+        $.get('<?= Url::to(["get-token-ventas"]) ?>', {
+            operacion_id: $operacion_id
+        }, function($response) {
+            if ($response.code == 202) {
+                $tempHtml = "";
+                $.each($response.ventas, function(key, item_venta) {
+                    $tempHtml += "<tr>" +
+                        '<td><a href="<?= Url::to(['/tpv/venta/view']) ?>?id=' + item_venta.id + '" target= "_blank">' + item_venta.folio + '</a></td>' +
+                        "<td>" + btf.conta.money(item_venta.total) + "</td>" +
+                        "<td>" + item_venta.sucursal + "</td>" +
+                        "<td>" + item_venta.empleado + "</td>" +
+                        "<td>" + item_venta.created_at + "</td>";
 
-                $tempHtml += "</tr>";
-            });
-            $contentVenta.html($tempHtml);
+                    $tempHtml += "</tr>";
+                });
+                $contentVenta.html($tempHtml);
 
-            $tempcobroHtml = "";
-            $.each($response.cobro,function(key, item_cobro){
-                $tempcobroHtml += "<h3>PAGOS REGISTRADOS</h3><div class= 'row'>"+
-                    "<div class='col-sm-6 text-center'><h2>"+item_cobro.metodo_pago_text +"</h2></div>"+
-                    "<div class='col-sm-6 text-center'><h2>"+ btf.conta.money(item_cobro.cantidad) +"</h2></div>"+
-                "</div>";
-            });
-            $('.div_cobro').html($tempcobroHtml);
-        }
-    },'json');
-}
-
+                $tempcobroHtml = "";
+                $.each($response.cobro, function(key, item_cobro) {
+                    $tempcobroHtml += "<h3>PAGOS REGISTRADOS</h3><div class= 'row'>" +
+                        "<div class='col-sm-6 text-center'><h2>" + item_cobro.metodo_pago_text + "</h2></div>" +
+                        "<div class='col-sm-6 text-center'><h2>" + btf.conta.money(item_cobro.cantidad) + "</h2></div>" +
+                        "</div>";
+                });
+                $('.div_cobro').html($tempcobroHtml);
+            }
+        }, 'json');
+    }
 </script>
-<?= $this->render('modal_cancelacion',[ "model"   => $model ]) ?>
+<?= $this->render('modal_cancelacion', ["model"   => $model]) ?>

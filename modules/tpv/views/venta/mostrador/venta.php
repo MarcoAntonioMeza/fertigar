@@ -1,4 +1,5 @@
 <?php
+
 use app\models\cobro\CobroVenta;
 use kartik\select2\Select2;
 
@@ -378,6 +379,7 @@ use kartik\select2\Select2;
             },
             carrito: [],
             moneda: 'MXN',
+            tipoCambio: 18,
             notas: '',
 
             servicioList: {
@@ -437,6 +439,22 @@ use kartik\select2\Select2;
             },
         },
         watch: {
+            moneda(val, oldVal) {
+                if (val === 'USD') {
+                    let nuevoTipoCambio = prompt('Ingrese el tipo de cambio actual (MXN a USD):', this.tipoCambio !== 1 ? this.tipoCambio : '');
+                    if (nuevoTipoCambio && !isNaN(parseFloat(nuevoTipoCambio)) && parseFloat(nuevoTipoCambio) > 0) {
+                        this.tipoCambio = parseFloat(nuevoTipoCambio);
+                    } else {
+                        this.tipoCambio = 1;
+                        this.moneda = 'MXN';
+                        alert('Tipo de cambio inválido. Se mantiene en MXN.');
+                        return;
+                    }
+                } else {
+                    this.tipoCambio = 1;
+                }
+                this.convertirCarrito();
+            },
             clienteBusqueda(val) {
                 this.clientesAjax = [];
             },
@@ -460,6 +478,31 @@ use kartik\select2\Select2;
             },
         },
         methods: {
+            convertirCarrito() {
+                // Convierte los precios del carrito según la moneda y tipo de cambio
+                if (this.moneda === 'USD' && this.tipoCambio > 0) {
+                    this.carrito = this.carrito.map(item => {
+                        let precioBase = item.precio_base || item.precio;
+                        return {
+                            ...item,
+                            precio: (parseFloat(precioBase) / this.tipoCambio).toFixed(2),
+                            iva: (parseFloat(item.iva) / this.tipoCambio).toFixed(2),
+                            ieps: (parseFloat(item.ieps) / this.tipoCambio).toFixed(2),
+                        };
+                    });
+                } else {
+                    // Regresa a MXN usando precio_base
+                    this.carrito = this.carrito.map(item => {
+                        let precioBase = item.precio_base || item.precio;
+                        return {
+                            ...item,
+                            precio: parseFloat(precioBase),
+                            iva: parseFloat(item.iva_base || item.iva),
+                            ieps: parseFloat(item.ieps_base || item.ieps),
+                        };
+                    });
+                }
+            },
             seleccionarCliente(cliente) {
                 this.clienteSeleccionado = cliente;
                 this.clienteBusqueda = cliente.nombre;
@@ -484,14 +527,29 @@ use kartik\select2\Select2;
                     alert('Cantidad excede el stock disponible.');
                     return;
                 }
+                // Guardar valores base en MXN para poder reconvertir
+                let precioBase = parseFloat(this.productoSeleccionado.precio_base) || parseFloat(this.nuevoProducto.precio);
+                let ivaBase = parseFloat(this.productoSeleccionado.iva) || 0;
+                let iepsBase = parseFloat(this.productoSeleccionado.ieps) || 0;
+                let precio = precioBase;
+                let iva = ivaBase;
+                let ieps = iepsBase;
+                if (this.moneda === 'USD' && this.tipoCambio > 0) {
+                    precio = (precioBase / this.tipoCambio).toFixed(2);
+                    iva = (ivaBase / this.tipoCambio).toFixed(2);
+                    ieps = (iepsBase / this.tipoCambio).toFixed(2);
+                }
                 this.carrito.push({
                     id: this.productoSeleccionado.id,
                     nombre: this.productoSeleccionado.nombre,
                     cantidad: this.nuevoProducto.cantidad,
-                    iva: this.productoSeleccionado.iva || 0,
-                    ieps: this.productoSeleccionado.ieps || 0,
-                    precio: this.nuevoProducto.precio,
-                    precio_base: this.productoSeleccionado.precio_base || 0,
+                    iva: iva,
+                    ieps: ieps,
+                    precio: precio,
+                    precio_base: precioBase,
+                    iva_base: ivaBase,
+                    ieps_base: iepsBase,
+
                 });
                 this.productoSeleccionado = null;
                 this.productoBusqueda = '';
@@ -539,8 +597,8 @@ use kartik\select2\Select2;
                 });
             },
             buscarProductosAjax(q) {
-                if(q.length < 3) {
-                    
+                if (q.length < 3) {
+
                     return;
                 }
                 var self = this;
@@ -576,7 +634,9 @@ use kartik\select2\Select2;
                     carrito: this.carrito,
                     pagos: this.pagos,
                     cliente_id: this.clienteSeleccionado ? this.clienteSeleccionado.id : null,
-                    observaciones: this.observaciones
+                    observaciones: this.observaciones,
+                    moneda: this.moneda,
+                    tipo_cambio: this.tipoCambio
                 }, function(data) {
                     if (!data.success) {
                         alert('Error al guardar la venta: ' + (data.message || ''));
@@ -586,7 +646,7 @@ use kartik\select2\Select2;
 
                     setTimeout(() => {
                         this.guardando = false;
-                        
+
                         //alert('Venta guardada correctamente.');
                         window.location.href = '<?= \yii\helpers\Url::to(['view', 'id' => '']); ?>' + data.id;
                         // Aquí podrías limpiar el formulario si lo deseas

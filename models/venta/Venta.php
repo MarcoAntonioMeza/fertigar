@@ -45,8 +45,8 @@ class Venta extends \yii\db\ActiveRecord
 
     public $cobroVenta;
 
-    const MONEDA_MXN = 10;
-    const MONEDA_USD = 20;
+    const MONEDA_MXN = 'MXN';
+    const MONEDA_USD = 'USD';
 
     public static $monedaList = [
         self::MONEDA_MXN => 'MXN',
@@ -116,8 +116,8 @@ class Venta extends \yii\db\ActiveRecord
             [['cliente_id', 'tipo', 'status', 'is_tpv_ruta','pay_credito','sucursal_id', 'is_especial','reparto_id','created_at', 'created_by', 'updated_at', 'updated_by','ruta_sucursal_id','devolucion_transaccion_id'], 'integer'],
             [['tipo', 'status', 'total','sucursal_id'], 'required'],
             [['is_tpv_ruta'], 'default', 'value'=> self::IS_TPV_RUTA_OFF],
-            [['total','subtotal','iva','ieps'], 'number'],
-            [['nota_cancelacion'], 'string'],
+            [['total','subtotal','iva','ieps','tipo_cambio'], 'number'],
+            [['nota_cancelacion', 'moneda'], 'string'],
             [['cliente_id'], 'exist', 'skipOnError' => true, 'targetClass' => Cliente::className(), 'targetAttribute' => ['cliente_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
@@ -145,6 +145,8 @@ class Venta extends \yii\db\ActiveRecord
             'subtotal' => 'Subtotal',
             'iva' => 'IVA',
             'ieps' => 'IEPS',
+            'moneda' => 'Moneda',
+            'tipo_cambio' => 'Tipo de Cambio',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
