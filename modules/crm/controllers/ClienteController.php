@@ -17,6 +17,7 @@ use app\models\esys\EsysDireccion;
 use app\models\credito\Credito;
 use app\models\credito\CreditoAbono;
 use app\models\credito\ViewCredito;
+use app\models\esys\EsysListaDesplegable;
 use app\models\venta\VentaTokenPay;
 
 
@@ -287,6 +288,20 @@ class ClienteController extends \app\controllers\AppController
 
     }
 
+    public function actionGetListaDesplegable()
+    {
+        $request = Yii::$app->request;
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        // Cadena de busqueda
+        if ($request->validateCsrfToken() && $request->isAjax) {
+            return [
+                "origenClienteList"     => EsysListaDesplegable::getItems('origen_cliente'),
+                "tipoClienteList"       => EsysListaDesplegable::getItems('tipo_cliente'),
+            ];
+        }
+
+        throw new BadRequestHttpException('Solo se soporta peticiones AJAX');
+    }
 //------------------------------------------------------------------------------------------------//
 // BootstrapTable list
 //------------------------------------------------------------------------------------------------//

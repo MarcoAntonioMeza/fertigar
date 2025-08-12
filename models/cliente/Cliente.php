@@ -35,19 +35,16 @@ use  app\models\sat\Regimenfiscal;
 class Cliente extends \yii\db\ActiveRecord
 {
 
-
     const STATUS_ACTIVE   = 10;
     const STATUS_INACTIVE = 1;
-
-
 
     const SEXO_HOMBRE = 10;
     const SEXO_MUJER = 20;
 
 
     public static $statusList = [
-        self::STATUS_ACTIVE   => 'Habilitado',
-        self::STATUS_INACTIVE => 'Deshabilitado',
+        self::STATUS_ACTIVE   => 'Activo',
+        self::STATUS_INACTIVE => 'Inactivo',
         //self::STATUS_DELETED  => 'Eliminado'
     ];
 
@@ -57,13 +54,6 @@ class Cliente extends \yii\db\ActiveRecord
     ];
 
 
-    const ORIGEN_MX = 10;
-    const ORIGEN_USA = 20;
-
-    public static $origenList = [
-        self::ORIGEN_MX   => 'México',
-        self::ORIGEN_USA => 'Estados Unidos',
-    ];
 
     const TIPO_LISTA_PRECIO_PUBLICO = 10;
     const TIPO_LISTA_PRECIO_MAYOREO = 20;
@@ -76,20 +66,11 @@ class Cliente extends \yii\db\ActiveRecord
     ];
 
 
-
-
-
     public $dir_obj;
     public $cliente_call;
 
     public $csv_file;
-    public $rows_details = [];
-
-    public $omit_telefono_movil;
-
-    private $num_rows = 0;
-    private $csv_column_name = [];
-
+    
     private $CambiosLog;
 
 
@@ -118,8 +99,6 @@ class Cliente extends \yii\db\ActiveRecord
                 'titulo_personal_id',
                 'asignado_id',
                 'tipo_cliente_id',
-                'omit_telefono_movil',
-                'pais',
                 'lista_precios'
             ], 'integer'],
             [['notas'], 'string'],
@@ -152,7 +131,6 @@ class Cliente extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'regimen_fiscal_id' => 'Regimen fiscal',
-            'pais' => 'Pais',
             'uso_cfdi' => 'Uso CFDI',
             'agente_id' => 'Agente asignado',
             'lista_precios' => 'Lista de precios asignada',

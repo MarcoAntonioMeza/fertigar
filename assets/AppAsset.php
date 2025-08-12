@@ -13,6 +13,7 @@ class AppAsset extends AssetBundle
         'js/my_js/afterload.js',
         'js/toastr/toastr.min.js',
         'js/jquery.mask.js',
+        'js/sweetalert/sweetalert.min.js',
     ];
 
     public $css = [
@@ -23,6 +24,7 @@ class AppAsset extends AssetBundle
         'css/my_css/ui.css',
         'css/my_css/views.css',
         'css/toastr/toastr.min.css',
+        'css/sweetalert/sweetalert.css',
     ];
 
     public $cssOptions = [

@@ -81,6 +81,7 @@ class ViewCliente extends \yii\db\ActiveRecord
                     'titulo_personal_id',
                     'titulo_personal',
                     'nombre_completo',
+                    'rfc',
                     'nombre',
                     'apellidos',
                     'email',
@@ -130,6 +131,7 @@ class ViewCliente extends \yii\db\ActiveRecord
                     ['like', 'id', $search],
                     ['like', 'telefono_movil', $search],
                     ['like', 'telefono', $search],
+                    ['like', 'rfc', $search],
                     ['like', 'nombre_completo', $search],
                 ]);
 

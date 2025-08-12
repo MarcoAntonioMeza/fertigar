@@ -70,6 +70,9 @@
         "codeception/module-yii2": "^1.0.0",
         "codeception/module-asserts": "^1.0.0"
     },
+    "replace": {
+        "bower-asset/jspdf-autotable": "*"
+    },
     "config": {
         "process-timeout": 1800,
         "fxp-asset": {
