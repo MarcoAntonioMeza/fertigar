@@ -194,7 +194,6 @@ $cobroTotal = 0;
                                         <td class="text-center"><?= CobroVenta::$tipoList[$item->tipo] ?></td>
                                         <td class="text-center">
                                             <?= CobroVenta::$servicioTpvList[$item->metodo_pago] ?>
-
                                             <?php if ($item->metodo_pago != CobroVenta::COBRO_EFECTIVO && $item->metodo_pago != CobroVenta::COBRO_CREDITO ): ?>
                                                 <p><strong style="font-size: 16px;color: #000;">Banco [ <?= $item->banco ?> / Cuenta <?= $item->cuenta ?> ]</strong></p>
                                             <?php endif ?>
