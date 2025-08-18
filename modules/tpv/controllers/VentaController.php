@@ -210,6 +210,7 @@ class VentaController extends \app\controllers\AppController
         $ids = explode(",", $id);
 
         $model = Venta::find()->with('ventaDetalle')->where(['id' => $ids])->all();
+    
         $count_ventas = VentaDetalle::find()->where(['venta_id' => $ids])->count();
         $model_detalle_venta = VentaDetalle::find()->where(['venta_id' => $ids])->all();
 

@@ -56,7 +56,8 @@
         "bower-asset/bootstrap-select": "~1.13",
         "bower-asset/jquery.print": "~1.6",
         "2amigos/qrcode-library": "~1.1",
-        "phpoffice/phpexcel": "dev-develop"
+        "phpoffice/phpexcel": "dev-develop",
+        "luecano/numero-a-letras": "2.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

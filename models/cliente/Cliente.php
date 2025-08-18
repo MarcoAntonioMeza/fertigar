@@ -70,7 +70,7 @@ class Cliente extends \yii\db\ActiveRecord
     public $cliente_call;
 
     public $csv_file;
-    
+
     private $CambiosLog;
 
 
@@ -214,6 +214,35 @@ class Cliente extends \yii\db\ActiveRecord
         return $this->hasOne(EsysDireccion::className(), ['cuenta_id' => 'id'])
             ->where(['cuenta' => EsysDireccion::CUENTA_CLIENTE, 'tipo' => EsysDireccion::TIPO_PERSONAL]);
     }
+
+
+    public function getDirs()
+    {
+        $direccion = $this->direccion;
+        $data = [
+            'estado_id' => $direccion->estado_id ?? null,
+            'estado' => $direccion->estado->singular ?? null,
+            'municipio_id' => $direccion->municipio_id ?? null,
+            'municipio' => $direccion->municipio->singular ?? null,
+            //'colonia_id' => $direccion->colonia_id ?? null,
+            'colonia' => $direccion->esysDireccionCodigoPostal->colonia ?? null,
+            //'codigo_postal_id' => $direccion->codigo_postal_id ?? null,
+            'direccion' => $direccion->direccion ?? null,
+            'num_ext' => $direccion->num_ext ?? null,
+            'num_int' => $direccion->num_int ?? null,
+            'codigo_search' => $direccion->esysDireccionCodigoPostal->codigo_postal ?? null,
+        ];
+
+        return $data;
+    }
+
+    public function getDireccionCompleta()
+    {
+        $dirs = $this->getDirs();
+        $str = "{$dirs['direccion']}, {$dirs['num_ext']}, {$dirs['num_int']}, {$dirs['colonia']}, {$dirs['municipio']}, {$dirs['estado']}";
+        return strtoupper($str);
+    }
+
     public function getCambiosLog()
     {
         return EsysCambioLog::find()
