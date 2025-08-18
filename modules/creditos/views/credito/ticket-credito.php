@@ -139,8 +139,8 @@ $itemID         = 0;
             <tr>
                 <td width="80%" style="border: none; text-align: right;">
                     <p><strong style="font-size: 16px;color: #000;"><?= CobroVenta::$servicioListAll[$cobro->metodo_pago] ?></strong></p>
-                      <?php if ($cobro->metodo_pago == CobroVenta::COBRO_OTRO ): ?>
-                        <p><strong style="font-size: 12px;color: #000;">[ <?= $cobro->nota_otro ?> ]</strong></p>
+                      <?php if ($cobro->metodo_pago != CobroVenta::COBRO_EFECTIVO ): ?>
+                        <p><strong style="font-size: 12px;color: #000;">[ <?= $cobro->banco ?> / <?= $cobro->cuenta ?>] </strong></p>
                     <?php endif ?>
                 </td>
                 <br>

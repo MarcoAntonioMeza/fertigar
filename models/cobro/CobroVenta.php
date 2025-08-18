@@ -126,6 +126,7 @@ class CobroVenta extends \yii\db\ActiveRecord
             [['venta_id', 'compra_id','tipo', 'tipo_cobro_pago', 'credito_id','fecha_credito', 'metodo_pago', 'created_at', 'created_by','producto_id'], 'integer'],
             [['cantidad', 'cantidad_pago','cargo_extra','cantidad_recibe'], 'number'],
             [['nota','trans_token_credito','nota_otro'], 'string'],
+            [['banco','cuenta'], 'string'],
             [['cobroVentaArray'], 'safe'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['venta_id'], 'exist', 'skipOnError' => true, 'targetClass' => Venta::className(), 'targetAttribute' => ['venta_id' => 'id']],

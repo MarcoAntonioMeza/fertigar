@@ -26,49 +26,27 @@ $bttUrlDelete = Url::to(['delete?id=']);
 
 <div class="ibox">
     <div class="ibox-content">
-        <p>
-            <?= $can['create']?
-                Html::a('<i class ="fa fa-plus"></i> NUEVO CLIENTE', ['create'], ['class' => 'btn btn-success add']): '' ?>
-        </p>
+        
         <div class="clientes-cliente-index">
-            <div class="btt-toolbar" style="border-style: solid;border-width: 1px;box-shadow: 2px 2px 5px #8d8d8d;">
-                <div class="panel mar-btm-5px">
-                    <div class="panel-body pad-btm-15px">
-                        <div>
-                            <strong>Filtrar [RANGO DE FECHA]</strong>
-                            <div class="DateRangePicker   kv-drp-dropdown">
-                                <?= DateRangePicker::widget([
-                                    'name'           => 'date_range',
-                                    //'presetDropdown' => true,
-                                    'hideInput'      => true,
-                                    'useWithAddon'   => true,
-                                    'convertFormat'  => true,
-                                    'startAttribute' => 'from_date',
-                                    'endAttribute' => 'to_date',
-                                    'startInputOptions' => ['value' => '2019-01-01'],
-                                    'endInputOptions' => ['value' => '2019-12-31'],
-                                    'pluginOptions'  => [
-                                        'locale' => [
-                                            'format'    => 'Y-m-d',
-                                            'separator' => ' - ',
-                                        ],
-                                        'opens' => 'left',
-                                        "autoApply" => true,
-                                    ],
-                                ])
-                                ?>
-                            </div>
-                            <br>
-                            <strong class="pad-rgt">Filtrar:</strong>
+            <div class="btt-toolbar" >
 
-                            <?=  Html::dropDownList('tipo_cliente', null, EsysListaDesplegable::getItems('tipo_cliente'), ['prompt' => 'Tipo de cliente'])  ?>
-
-                            <?=  Html::dropDownList('status', null, Cliente::$statusList, [  'class' => 'max-width-170px'])  ?>
-                        </div>
-
+                <div class="row" style="width: 800px;">
+                    <div class="col-sm-3">
+                        <?= $can['create']?
+                            Html::a('<i class ="fa fa-plus"></i> NUEVO CLIENTE', ['create'], ['class' => 'btn btn-success add']): '' ?>
                     </div>
-                </div>
+                     
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            
+                            <?=  Html::dropDownList('tipo_cliente', null, EsysListaDesplegable::getItems('tipo_cliente'), ['prompt' => '-- TIPO CLIENTE --', 'class' => 'max-width-170px'])  ?>
+                            <?=  Html::dropDownList('status', null, Cliente::$statusList, [ 'prompt' => '-- ESTATUS --',  'class' => 'max-width-170px'])  ?>
+                        </div>
+                    </div>
+                </div>      
             </div>
+                    
+            
             <table class="bootstrap-table"></table>
         </div>
     </div>

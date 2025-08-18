@@ -147,11 +147,19 @@ $bttUrlView   = Url::to(['view?id=']);
                                             </div>
                                         </div>
 
-
-                                        <div class="div_metodo_otro" style="padding:15px;display: none;">
-                                            <strong>NOTA / DESCRIPCIÓN</strong>
-                                            <?= Html::textArea("comentario",null,[ 'class' => 'form-control', 'rows' => '6', 'style' => 'border-color:#000;box-shadow: 0px 1px 6px #000;', 'id' => 'inputOtroComentario' ]) ?>
+                                        <div class="row contentInfoBanco" style="display: none;">
+                                            <div class="col-sm-6">
+                                                <?= Html::label('Banco','Pago[banco]') ?>
+                                                <input type="text" class="form-control" id="pago-banco" placeholder="Banco">
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <?= Html::label('Cuenta','Pago[cuenta]') ?>
+                                                <input type="text" class="form-control" id="pago-cuenta" placeholder="Cuenta de banco">
+                                            </div>
                                         </div>
+
+
+                                      
 
                                         <table class="table table-hover table-vcenter" style="background: aliceblue;">
                                             <thead>
@@ -185,24 +193,7 @@ $bttUrlView   = Url::to(['view?id=']);
 
                                         <div class="form-group" style="padding:15px">
                                             <button  id="btnClearPay"  class="btn btn-default" type="button">Cancelar</button>
-                                            <?php if (Yii::$app->user->identity->sucursal_id): ?>
-
-                                                <?php if (Credito::validUserAdministrativo()): ?>
-                                                    <?= Html::submitButton('COBRAR', ['class' => 'btn btn-primary btn-lg col-sm-3', "style" => "font-size:20px","id" => "btnCreditoAdd"]) ?>
-                                                    <div class="alert alert-info">
-                                                        <strong>AVISO</strong> Tu usuario es administrativo, los abonos que realices no sera realicioandos a ningun reparto y reporte de cuentas.
-                                                    </div>
-                                                <?php else: ?>
-                                                    <?php if (Credito::validUserRepartidoApertura()): ?>
-                                                        <?= Html::submitButton('COBRAR', ['class' => 'btn btn-primary btn-lg col-sm-3', "style" => "font-size:20px","id" => "btnCreditoAdd"]) ?>
-                                                    <?php else: ?>
-                                                        <div class="alert alert-info">
-                                                            <strong>AVISO</strong> No puedes registrar abonos, no tienes un reparto en curso.
-                                                        </div>
-                                                    <?php endif ?>
-                                                <?php endif ?>
-                                            <?php endif ?>
-
+                                            <?= Html::submitButton('COBRAR', ['class' => 'btn btn-primary btn-lg col-sm-3', "style" => "font-size:20px","id" => "btnCreditoAdd"]) ?>
                                             <?= Html::submitButton('IMPRIMIR TICKET', ['class' => 'btn btn-warning btn-lg col-sm-3', "style" => "font-size:20px; display:none","id" => "btnCreditoTicketAdd"]) ?>
                                         </div>
                                     </div>
@@ -464,9 +455,12 @@ $bttUrlView   = Url::to(['view?id=']);
     $form_metodoPagoCredito = {
         $metodoPago : $('#pago-metodo_pago'),
         $cantidad   : $('#pago-cantidad'),
+        $banco   : $('#pago-banco'),
+        $cuenta   : $('#pago-cuenta'),
     },
     $btnCreditoAdd       = $("#btnCreditoAdd"),
     VAR_CREDITO             = '<?= CobroVenta::COBRO_CREDITO ?>';
+    VAR_EFECTIVO            = '<?= CobroVenta::COBRO_EFECTIVO ?>';
     VAR_TARJETA_CREDITO     = '<?= CobroVenta::COBRO_TARJETA_CREDITO ?>';
     VAR_DEBITO_CREDITO      = '<?= CobroVenta::COBRO_TARJETA_DEBITO ?>';
     VAR_COBRO_OTRO          = '<?= CobroVenta::COBRO_OTRO ?>';
@@ -735,12 +729,8 @@ $bttUrlView   = Url::to(['view?id=']);
 
                 $("#table_credito_metodo_id",$tr).html(metodo.metodo_pago_text);
 
-                if (metodo.metodo_pago_id == VAR_DEBITO_CREDITO || metodo.metodo_pago_id == VAR_TARJETA_CREDITO)
-                    $("#table_credito_metodo_cantidad",$tr).html( btf.conta.money( metodo.cantidad) +" + [ CARGO EXTRA - "+ btf.conta.money(metodo.cargo_extra) + "]");
-                else if (metodo.metodo_pago_id == VAR_COBRO_OTRO )
-                    $("#table_credito_metodo_cantidad",$tr).html( btf.conta.money( metodo.cantidad) +" + [ NOTA - "+ metodo.nota_otro +"]");
-                else
-                    $("#table_credito_metodo_cantidad",$tr).html( btf.conta.money(metodo.cantidad) );
+                
+                $("#table_credito_metodo_cantidad",$tr).html( btf.conta.money(metodo.cantidad) );
 
 
                 pago_total = pago_total + parseFloat(metodo.cantidad);
@@ -910,9 +900,9 @@ $bttUrlView   = Url::to(['view?id=']);
                 "metodo_pago_id"    : $form_metodoPagoCredito.$metodoPago.val(),
                 "metodo_pago_text"  : $('option:selected', $form_metodoPagoCredito.$metodoPago).text(),
                 "cantidad"          : getCantidadMetodoPago($form_metodoPagoCredito.$cantidad.val()),
-                "cargo_extra"       : $form_metodoPagoCredito.$metodoPago.val() == VAR_TARJETA_CREDITO || $form_metodoPagoCredito.$metodoPago.val() == VAR_DEBITO_CREDITO  ? (2 * parseFloat(getCantidadMetodoPago($form_metodoPagoCredito.$cantidad.val()))) / 100 : 0,
-                //"producto_id"       :  $form_metodoPagoCredito.$metodoPago.val() == VAR_COBRO_OTRO  ? $inputProducto.val() : null,
-                //"producto_text"     :  $form_metodoPagoCredito.$metodoPago.val() == VAR_COBRO_OTRO  ? $('option:selected', $inputProducto).text() : null,
+                "cargo_extra"       :  0,
+                "banco"             :  $form_metodoPagoCredito.$banco.val(),
+                "cuenta"            :  $form_metodoPagoCredito.$cuenta.val(),
                 "nota_otro"         :  $inputOtroComentario.val(),
                 "origen"            : 1,
             };
@@ -928,23 +918,24 @@ $bttUrlView   = Url::to(['view?id=']);
 
 
         $form_metodoPagoCredito.$cantidad.val(null);
+        $form_metodoPagoCredito.$banco.val(null);
+        $form_metodoPagoCredito.$cuenta.val(null);
         $inputOtroComentario.val(null);
         //$inputCantidadRecibe.val(null);
         //calcula_cambio_envio();
         render_metodo_template_credito();
+        $('.contentInfoBanco').hide();
+        
     });
 
 
     $form_metodoPagoCredito.$metodoPago.change(function(){
         $('.alert_warning_credito').hide();
-        $('.div_metodo_otro').hide();
-        $('.text-warning-credito').html(null);
-        if ($form_metodoPagoCredito.$metodoPago.val() == VAR_TARJETA_CREDITO || $form_metodoPagoCredito.$metodoPago.val() == VAR_DEBITO_CREDITO) {
-            $('.alert_warning_credito').show();
-            $('.text-warning-credito').html('SE AGREGA UN CARGO EXTRA DEL 2% DEL PAGO A REALIZAR');
-        }
-        if ($form_metodoPagoCredito.$metodoPago.val() == VAR_COBRO_OTRO) {
-            $('.div_metodo_otro').show();
+        $('.contentInfoBanco').hide();
+        
+        
+        if ($form_metodoPagoCredito.$metodoPago.val() != VAR_CREDITO && $form_metodoPagoCredito.$metodoPago.val() != VAR_EFECTIVO) {
+            $('.contentInfoBanco').show();
         }
     });
 
