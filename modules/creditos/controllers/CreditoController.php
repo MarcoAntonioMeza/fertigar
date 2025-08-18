@@ -424,8 +424,9 @@ class CreditoController extends \app\controllers\AppController
                         $CobroVenta->trans_token_credito   = $token_pay;
                         $CobroVenta->cantidad              = $item_pago["cantidad"];
                         $CobroVenta->cantidad_pago         = $item_pago["cantidad"];
+                        $CobroVenta->banco                 = $item_pago["banco"];
+                        $CobroVenta->cuenta                = $item_pago["cuenta"];
                         $CobroVenta->cargo_extra           = $item_pago["cargo_extra"];
-                        $CobroVenta->nota_otro       = $item_pago["nota_otro"];
                         $CobroVenta->save();
 
 
@@ -445,6 +446,7 @@ class CreditoController extends \app\controllers\AppController
                 return [
                     "code" => 10,
                     "message" => "Ocurrio un error, intenta nuevamente.",
+                    "trace" => $e->getMessage(),
                 ];
             }
 

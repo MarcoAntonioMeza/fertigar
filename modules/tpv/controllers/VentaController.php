@@ -1860,6 +1860,8 @@ class VentaController extends \app\controllers\AppController
                     $cobroVenta->venta_id = $model->id;
                     $cobroVenta->metodo_pago = $pago['metodo'];
                     $cobroVenta->cantidad = $pago['monto'];
+                    $cobroVenta->banco = $pago['banco'];
+                    $cobroVenta->cuenta = $pago['cuenta'];
                     $cobroVenta->tipo = CobroVenta::TIPO_VENTA;
                     $cobroVenta->tipo_cobro_pago = CobroVenta::PERTENECE_COBRO;
                     $cobroVenta->cantidad_pago = $total;

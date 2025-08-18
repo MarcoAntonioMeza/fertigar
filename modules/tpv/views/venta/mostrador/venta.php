@@ -167,6 +167,14 @@ use kartik\select2\Select2;
                                             <button class="btn btn-primary w-100" @click="agregarMetodoPago" :disabled="!nuevoMetodoPago || !nuevoMontoPago || nuevoMontoPago <= 0">Agregar</button>
                                         </div>
                                     </div>
+                                    <div class="row" v-if="nuevoMetodoPago && nuevoMetodoPago != 10 && nuevoMetodoPago != 70">
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" v-model.number="metodoPagoBanco" placeholder="Banco">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" v-model.number="metodoPagoCuenta" placeholder="Cuenta de banco">
+                                        </div>
+                                    </div>
                                     <div v-if="pagos.length" class="mb-2">
                                         <table class="table table-sm table-bordered table-striped" style="background:#f9fafb;">
                                             <thead>
@@ -392,6 +400,8 @@ use kartik\select2\Select2;
                 CREDITO: 'CREDITO',
             },
             nuevoMetodoPago: '',
+            metodoPagoBanco: '',
+            metodoPagoCuenta: '',
             nuevoMontoPago: '',
             pagos: [],
             guardando: false,
@@ -569,10 +579,14 @@ use kartik\select2\Select2;
                 }
                 this.pagos.push({
                     metodo: this.nuevoMetodoPago,
-                    monto: parseFloat(this.nuevoMontoPago)
+                    monto: parseFloat(this.nuevoMontoPago),
+                    banco : this.metodoPagoBanco,
+                    cuenta : this.metodoPagoCuenta
                 });
                 this.nuevoMetodoPago = '';
                 this.nuevoMontoPago = '';
+                this.metodoPagoBanco = '';
+                this.metodoPagoCuenta = '';
                 // Limpiar Select2
                 if (window.$ && $('#nuevoMetodoPagoSelect').length) {
                     $('#nuevoMetodoPagoSelect').val(null).trigger('change');

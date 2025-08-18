@@ -313,8 +313,8 @@ class NiftyComponent extends Component{
 			if(Yii::$app->user->can('historialAccesosUser'))
 				$adminSistema[] = ['label' => 'Historial de accesos', 'url' => ['/admin/historial-de-acceso/index']];
 
-			if(Yii::$app->user->can('theCreator'))
-				$adminSistema[] = ['label' => 'Versiones / Updates ', 'url' => ['/admin/version/list']];
+			// if(Yii::$app->user->can('theCreator'))
+			// 	$adminSistema[] = ['label' => 'Versiones / Updates ', 'url' => ['/admin/version/list']];
 
 			if(!empty($adminSistema))
 				$admin[] = ['label' => '<i class="fa fa-database"></i><span class="nav-label">Sistema</span> <span class="fa arrow"></span>', 'url' => '#', 'items' => $adminSistema,'submenuTemplate' => "\n<ul class='nav nav-second-level'>\n{items}\n</ul>\n"];
