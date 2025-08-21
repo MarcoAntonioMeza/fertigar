@@ -1272,17 +1272,17 @@ class VentaController extends \app\controllers\AppController
 
 
         // Convertir a número con 6 decimales para el JSON
-        $toNumber = function($s) use ($scale) {
-            // number_format garantiza 6 decimales; cast a float deja numero (JSON lo tomará como number)
-            return  number_format((float) $s, $scale, '.', '');
-        };
+        // $toNumber = function($s) use ($scale) {
+        //     // number_format garantiza 6 decimales; cast a float deja numero (JSON lo tomará como number)
+        //     return  number_format((float) $s, $scale, '.', '');
+        // };
         
 
 
         foreach ($venta->ventaDetalle as $key => $itemVenta) {
 
-            $subtotal = $toNumber( MathUtils::mul($itemVenta->precio_venta, $itemVenta->cantidad));
-            $iva = $toNumber(MathUtils::mul($subtotal, $rate));
+            $subtotal = number_format((float)MathUtils::mul($itemVenta->precio_venta, $itemVenta->cantidad), 6, '.', '') ;
+            $iva = number_format((float)MathUtils::mul($subtotal, $rate), 6, '.', '') ; 
 
 
             array_push($item, 
@@ -1305,7 +1305,7 @@ class VentaController extends \app\controllers\AppController
                             'IsRetention' => false,
                         ],
                     ],
-                    'Total' => $toNumber( MathUtils::add($subtotal,$iva))
+                    'Total' => number_format((float)MathUtils::add($subtotal,$iva), 6, '.', '') 
                 ]);
         }
 
