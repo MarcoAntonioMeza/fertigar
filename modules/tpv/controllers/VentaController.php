@@ -1274,8 +1274,9 @@ class VentaController extends \app\controllers\AppController
         // Convertir a número con 6 decimales para el JSON
         $toNumber = function($s) use ($scale) {
             // number_format garantiza 6 decimales; cast a float deja numero (JSON lo tomará como number)
-            return (float) number_format((float) $s, $scale, '.', '');
+            return  number_format((float) $s, $scale, '.', '');
         };
+        
 
 
         foreach ($venta->ventaDetalle as $key => $itemVenta) {
