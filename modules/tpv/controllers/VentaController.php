@@ -29,6 +29,7 @@ use app\models\inv\Operacion;
 use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
 use app\models\cliente\Cliente;
+use app\models\MathUtils;
 
 /**
  * Default controller for the `clientes` module
@@ -1270,8 +1271,8 @@ class VentaController extends \app\controllers\AppController
 
         foreach ($venta->ventaDetalle as $key => $itemVenta) {
 
-            $subtotal = round($itemVenta->precio_venta * $itemVenta->cantidad, 6);
-            $iva = round($subtotal * $rate, 6);
+            $subtotal =  MathUtils::mul($itemVenta->precio_venta, $itemVenta->cantidad);
+            $iva = MathUtils::mul($subtotal, $rate);
 
             array_push($item, 
                 [
@@ -1293,7 +1294,7 @@ class VentaController extends \app\controllers\AppController
                             'IsRetention' => false,
                         ],
                     ],
-                    'Total' => round($subtotal + $iva,6)
+                    'Total' => MathUtils::add($subtotal,$iva)
                 ]);
         }
 
