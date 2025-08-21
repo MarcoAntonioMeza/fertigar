@@ -1287,14 +1287,14 @@ class VentaController extends \app\controllers\AppController
                     'TaxObject' => '02',
                     'Taxes' => [
                         [
-                            'Base' => $subtotal,
-                            'Rate' => $rate,
-                            'Total' => $iva,
+                            'Base' => (float) $subtotal,
+                            'Rate' => (float) $rate,
+                            'Total'=> (float) $iva,
                             'Name' => 'IVA',
                             'IsRetention' => false,
                         ],
                     ],
-                    'Total' => MathUtils::add($subtotal,$iva)
+                    'Total' => (float) MathUtils::add($subtotal,$iva)
                 ]);
         }
 
