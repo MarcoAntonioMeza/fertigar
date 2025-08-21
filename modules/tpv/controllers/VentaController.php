@@ -1268,11 +1268,21 @@ class VentaController extends \app\controllers\AppController
         $item = [];
         $rate = 0.160000;
 
+        $scale = 6;
+
+
+        // Convertir a número con 6 decimales para el JSON
+        $toNumber = function($s) use ($scale) {
+            // number_format garantiza 6 decimales; cast a float deja numero (JSON lo tomará como number)
+            return (float) number_format((float) $s, $scale, '.', '');
+        };
+
 
         foreach ($venta->ventaDetalle as $key => $itemVenta) {
 
-            $subtotal = MathUtils::fixNum( MathUtils::mul($itemVenta->precio_venta, $itemVenta->cantidad));
-            $iva = MathUtils::fixNum(MathUtils::mul($subtotal, $rate));
+            $subtotal = $toNumber( MathUtils::mul($itemVenta->precio_venta, $itemVenta->cantidad));
+            $iva = $toNumber(MathUtils::mul($subtotal, $rate));
+
 
             array_push($item, 
                 [
@@ -1294,7 +1304,7 @@ class VentaController extends \app\controllers\AppController
                             'IsRetention' => false,
                         ],
                     ],
-                    'Total' => MathUtils::fixNum( MathUtils::add($subtotal,$iva))
+                    'Total' => $toNumber( MathUtils::add($subtotal,$iva))
                 ]);
         }
 
