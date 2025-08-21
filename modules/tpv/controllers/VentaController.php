@@ -1271,8 +1271,8 @@ class VentaController extends \app\controllers\AppController
 
         foreach ($venta->ventaDetalle as $key => $itemVenta) {
 
-            $subtotal =  MathUtils::mul($itemVenta->precio_venta, $itemVenta->cantidad);
-            $iva = MathUtils::mul($subtotal, $rate);
+            $subtotal = MathUtils::fixNum( MathUtils::mul($itemVenta->precio_venta, $itemVenta->cantidad));
+            $iva = MathUtils::fixNum(MathUtils::mul($subtotal, $rate));
 
             array_push($item, 
                 [
@@ -1287,14 +1287,14 @@ class VentaController extends \app\controllers\AppController
                     'TaxObject' => '02',
                     'Taxes' => [
                         [
-                            'Base' => (float) $subtotal,
-                            'Rate' => (float) $rate,
-                            'Total'=> (float) $iva,
+                            'Base' =>  $subtotal,
+                            'Rate' =>  $rate,
+                            'Total'=>  $iva,
                             'Name' => 'IVA',
                             'IsRetention' => false,
                         ],
                     ],
-                    'Total' => (float) MathUtils::add($subtotal,$iva)
+                    'Total' => MathUtils::fixNum( MathUtils::add($subtotal,$iva))
                 ]);
         }
 

@@ -63,4 +63,9 @@ class MathUtils
     {
         return is_string($value) ? $value : number_format((float)$value, self::SCALE, '.', '');
     }
+
+    public  static function fixNum($v) {
+    // convierte a float y redondea a 6 decimales
+        return (float) round((float) $v, 6);
+    }
 }
