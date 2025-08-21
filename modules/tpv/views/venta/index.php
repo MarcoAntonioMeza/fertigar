@@ -9,7 +9,7 @@ use kartik\daterange\DateRangePicker;
 BootstrapTableAsset::register($this);
 /* @var $this yii\web\View */
 
-$this->title = 'Venta';
+$this->title = 'Remisiones';
 $this->params['breadcrumbs'][] = $this->title;
 
 $bttExport    = Yii::$app->name . ' - ' . $this->title . ' - ' . date('Y-m-d H.i');
@@ -22,44 +22,43 @@ $bttUrlDelete = Url::to(['delete?id=']);
 
 <div class="ibox">
     <div class="ibox-content">
-        <p>
-            <?= $can['create']?
-                Html::a('<i class="fa fa-plus"></i> NUEVA VENTA', ['menu-venta'], ['class' => 'btn btn-success btn-lg add']): '' ?>
-        </p>
+
         <div class="tpv-venta-index">
-            <div class="btt-toolbar" style="border-style: solid;border-width: 1px;box-shadow: 2px 2px 5px #8d8d8d;">
+            <div class="btt-toolbar" >
                 <?= Html::hiddenInput('status', Venta::STATUS_VENTA) ?>
-                <div class="panel mar-btm-5px">
-                    <div class="panel-body pad-btm-15px">
-                        <div>
-                            <strong>Filtrar [FECHA]</strong>
-                           <div class="DateRangePicker   kv-drp-dropdown">
-                                <?= DateRangePicker::widget([
-                                    'name'           => 'date_range',
-                                    //'presetDropdown' => true,
-                                    'hideInput'      => true,
-                                    'useWithAddon'   => true,
-                                    'convertFormat'  => true,
-                                    'startAttribute' => 'from_date',
-                                    'endAttribute' => 'to_date',
-                                    'startInputOptions' => ['value' => '2019-01-01'],
-                                    'endInputOptions' => ['value' => '2019-12-31'],
-                                    'pluginOptions'  => [
-                                        'locale' => [
-                                            'format'    => 'Y-m-d',
-                                            'separator' => ' - ',
-                                        ],
-                                        'opens' => 'left',
-                                        "autoApply" => true,
-                                    ],
-                                ])
-                                ?>
-                            </div>
-                            <br>
-                           </div>
+                <div class="row" style="width: 800px;">
+                    <div class="col-sm-3">
+                        <?= $can['create']?
+                            Html::a('<i class="fa fa-plus"></i> NUEVA REMISION', ['menu-venta'], ['class' => 'btn btn-success btn-lg add']): '' ?>
+                    </div>
+                    <div class="col-sm-8">
+                        <strong class="pad-rgt">Filtrar [FECHA]:</strong>
+                        <?= DateRangePicker::widget([
+                            'name'           => 'date_range',
+                            //'presetDropdown' => true,
+                            'hideInput'      => true,
+                            'useWithAddon'   => true,
+                            'convertFormat'  => true,
+                            'startAttribute' => 'from_date',
+                            'endAttribute' => 'to_date',
+                            'pluginOptions'  => [
+                                'locale' => [
+                                    'format'    => 'Y-m-d',
+                                    'separator' => ' - ',
+
+                                ],
+                                'opens' => 'left',
+                                "autoApply" => true,
+                            ],
+                        ])
+                        ?>
+
                     </div>
                 </div>
             </div>
+                
+                
+            
             <table class="bootstrap-table"></table>
         </div>
     </div>

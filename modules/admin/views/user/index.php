@@ -24,50 +24,29 @@ $bttUrlDelete = Url::to(['delete?id=']);
 
 ?>
 
-<p>
-    <?= $can['create']?
-        Html::a('Nuevo usuario', ['create'], ['class' => 'btn btn-success add']): '' ?>
-</p>
 
- <div class="admin-user-internos-index">
-    <div class="btt-toolbar">
-        <div class="panel mar-btm-5px">
-            <div class="panel-body pad-btm-15px">
-                <div>
-                   <div class="DateRangePicker   kv-drp-dropdown  col-sm-6">
-                        <?= DateRangePicker::widget([
-                            'name'           => 'date_range',
-                            //'presetDropdown' => true,
-                            'hideInput'      => true,
-                            'useWithAddon'   => true,
-                            'convertFormat'  => true,
-                            'startAttribute' => 'from_date',
-                            'endAttribute' => 'to_date',
-                            'startInputOptions' => ['value' => '2019-01-01'],
-                            'endInputOptions' => ['value' => '2019-12-31'],
-                            'pluginOptions'  => [
-                                'locale' => [
-                                    'format'    => 'Y-m-d',
-                                    'separator' => ' - ',
-                                ],
-                                'opens' => 'left',
-                                "autoApply" => true,
-                            ],
-                        ])
-                        ?>
+<div class="admin-user-index">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="btt-toolbar">
+                <div class="row" style="width: 800px;">
+                    <div class="col-sm-4">
+                        
+                            <?= $can['create']?
+                                Html::a('<i class="fa fa-plus"></i>&nbsp;Nuevo usuario', ['create'], ['class' => 'btn btn-success add']): '' ?>
+                        
                     </div>
-                    <strong class="pad-rgt">Filtrar:</strong>
-                    <?= Html::dropDownList('origen', null, User::$origenList, ['prompt' => 'Tipo de origen', 'class' => 'max-width-170px']) ?>
-
-                     <?= Html::dropDownList('perfil', null, AuthAssignment::getItemsAssignments(), ['prompt' => 'Todos los perfil', 'class' => 'max-width-170px']) ?>
-
-                    <?= Html::dropDownList('departamento_id', null, EsysListaDesplegable::getItems('departamento_laboral'), ['prompt' => 'Todos los departamente', 'class' => 'max-width-170px']) ?>
-
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <?= Html::dropDownList('perfil', null, AuthAssignment::getItemsAssignments(), ['prompt' => '-- PERFILES --', 'class' => 'max-width-170px']) ?>
+                            <?= Html::dropDownList('departamento_id', null, EsysListaDesplegable::getItems('departamento_laboral'), ['prompt' => '-- DEPARTAMENTOS --']) ?>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <table class="bootstrap-table"></table>
         </div>
     </div>
-    <table class="bootstrap-table"></table>
 </div>
 
 
@@ -112,20 +91,6 @@ $bttUrlDelete = Url::to(['delete?id=']);
                     sortable: true,
                 },
                 {
-                    field: 'perfiles_asignar',
-                    title: 'Perfiles que pudiera asignar',
-                    align: 'center',
-                    sortable: true,
-                    visible: false,
-                },
-                {
-                    field: 'sexo',
-                    title: 'sexo',
-                    align: 'center',
-                    sortable: true,
-                    visible: false,
-                },
-                {
                     field: 'fecha_nac',
                     title: 'Fecha de nacimiento',
                     align: 'center',
@@ -139,38 +104,12 @@ $bttUrlDelete = Url::to(['delete?id=']);
                     align: 'center',
                     sortable: true,
                 },
-                {
-                    field: 'telefono_movil',
-                    title: 'Celular',
-                    sortable: true,
-                },
-                {
-                    field: 'cargo',
-                    title: 'Cargo',
-                    sortable: true,
-                },
+                
+                
                 {
                     field: 'departamento',
                     title: 'Departamento',
                     sortable: true,
-                },
-                {
-                    field: 'estado',
-                    title: 'Estado',
-                    sortable: true,
-                    visible: false,
-                },
-                {
-                    field: 'municipio',
-                    title: 'Municipio',
-                    sortable: true,
-                    visible: false,
-                },
-                {
-                    field: 'origen',
-                    title: 'Origen',
-                    sortable: true,
-                    formatter: btf.status.origen,
                 },
                 {
                     field: 'status',
@@ -221,7 +160,7 @@ $bttUrlDelete = Url::to(['delete?id=']);
             ],
             params = {
                 id      : 'usuario',
-                element : '.admin-user-internos-index',
+                element : '.admin-user-index',
                 url     : '<?= $bttUrl ?>',
                 bootstrapTable : {
                     columns : columns,

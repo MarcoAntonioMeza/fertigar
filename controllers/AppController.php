@@ -46,16 +46,11 @@ class AppController extends Controller
                      *************************/
                     [
                         'controllers' => ['site'],
-                        'actions' => ['index', 'acerca-de', 'permisos', 'error'],
+                        'actions' => ['index', 'acerca-de', 'permisos', 'error','crear-factura','descargar-factura','enviar-factura','cfdis'],
                         'allow' => true,
                     ],
 
-                    [
-                        'controllers' => ['inventario/operacion-entrada-incidencia'],
-                        'actions' => ['index', 'operacion-entrada-incidencia-json-btt', 'get-operacion-incidencia', 'post-operacion-omitir', 'post-operacion-guardar'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
+                    
                     /*************************
                      * Admin
                      *************************/
@@ -479,7 +474,11 @@ class AppController extends Controller
                             'cliente-ajax',
                             'venta-info',
                             'imprimir-ticket-entrega',
-                            'imprimir-pagare-ticket'
+                            'imprimir-pagare-ticket',
+                            'tipo-cambio-ajax',
+                            'post-factura',
+                            'get-factura'
+
                         ],
                         'allow' => true,
                         'roles' => ['ventaView'],

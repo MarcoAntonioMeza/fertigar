@@ -110,6 +110,13 @@ class TipoCambio extends \yii\db\ActiveRecord
         
         return $query ?  $query->tipo_cambio : 0;
     }
+    
+    public static function getUltimoTipoCambio()
+    {
+        $query = TipoCambio::find()->orderBy('fecha DESC')->one();
+        
+        return $query ?  $query->tipo_cambio : 0;
+    }
 
    
 //------------------------------------------------------------------------------------------------//

@@ -61,12 +61,15 @@ use kartik\select2\Select2;
                                         <option value="MXN">MXN</option>
                                         <option value="USD">USD</option>
                                     </select>
+                                    <small v-if="moneda !== 'MXN'">{{ tipoCambio }}</small>
                                     <span v-if="moneda === 'MXN'">
                                         <img src="https://flagcdn.com/mx.svg" width="32" height="22" style="border-radius:4px;box-shadow:0 1px 4px #aaa;" alt="MXN">
                                     </span>
                                     <span v-else>
                                         <img src="https://flagcdn.com/us.svg" width="32" height="22" style="border-radius:4px;box-shadow:0 1px 4px #aaa;" alt="USD">
                                     </span>
+
+
                                 </div>
                             </div>
                             <div class="col-md-8 mb-2">
@@ -167,7 +170,7 @@ use kartik\select2\Select2;
                                             <button class="btn btn-primary w-100" @click="agregarMetodoPago" :disabled="!nuevoMetodoPago || !nuevoMontoPago || nuevoMontoPago <= 0">Agregar</button>
                                         </div>
                                     </div>
-                                    <div class="row" v-if="nuevoMetodoPago && nuevoMetodoPago != 10 && nuevoMetodoPago != 70">
+                                    <div class="row" v-if="nuevoMetodoPago &&  nuevoMetodoPago != 70">
                                         <div class="col-sm-6">
                                             <input type="text" class="form-control" v-model.number="metodoPagoBanco" placeholder="Banco">
                                         </div>
@@ -451,15 +454,18 @@ use kartik\select2\Select2;
         watch: {
             moneda(val, oldVal) {
                 if (val === 'USD') {
-                    let nuevoTipoCambio = prompt('Ingrese el tipo de cambio actual (MXN a USD):', this.tipoCambio !== 1 ? this.tipoCambio : '');
-                    if (nuevoTipoCambio && !isNaN(parseFloat(nuevoTipoCambio)) && parseFloat(nuevoTipoCambio) > 0) {
-                        this.tipoCambio = parseFloat(nuevoTipoCambio);
-                    } else {
-                        this.tipoCambio = 1;
-                        this.moneda = 'MXN';
-                        alert('Tipo de cambio inválido. Se mantiene en MXN.');
-                        return;
-                    }
+                    let self = this; 
+                    $.get('<?= \yii\helpers\Url::to(['tipo-cambio-ajax']); ?>',function(response){
+                        if(response.code == 202){
+                            self.tipoCambio = parseFloat(response.tipoCambio);
+                        }else{
+                            self.tipoCambio = 1;
+                            self.moneda = 'MXN';
+                            alert('Tipo de cambio inválido. Se mantiene en MXN.');
+                            return;
+                        }
+                    },'json');
+
                 } else {
                     this.tipoCambio = 1;
                 }

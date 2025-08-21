@@ -23,12 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <li>
             <a class="nav-link" data-toggle="tab" href="#tab-credito-pagado">PAGADO</a>
         </li>
-        <li>
-            <a class="nav-link" data-toggle="tab" href="#tab-credito-hoy">HOY</a>
-        </li>
-        <li>
-            <a class="nav-link" data-toggle="tab" href="#tab-saldos-ruta">SALDOS POR RUTA</a>
-        </li>
+        
+        
     </ul>
     <div class="tab-content">
         <div role="tabpanel" id="tab-credito-vigente" class="tab-pane active">
@@ -51,15 +47,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 "can"   => $can
                 ]) ?>
         </div>
-        <div id="tab-credito-hoy"  role="tabpanel" class="tab-pane">
-            <?= $this->render('_index_hoy',[
-                "can"   => $can
-            ]) ?>
-        </div>
-        <div id="tab-saldos-ruta"  role="tabpanel" class="tab-pane">
-            <?= $this->render('_index_saldos_ruta',[
-                "can"   => $can
-            ]) ?>
-        </div>
+        
     </div>
 </div>

@@ -153,10 +153,10 @@ class ViewUser extends \yii\db\ActiveRecord
                     'apellidos',
                     'nombre_completo',
                     'perfil',
-                    'perfiles_asignar',
+                    
                     'sexo',
                     'fecha_nac',
-                    'origen',
+                    
                     'telefono',
                     'telefono_movil',
                     'cargo',
@@ -195,15 +195,6 @@ class ViewUser extends \yii\db\ActiveRecord
 
             if(isset($filters['departamento_id']))
                 $query->andFilterWhere(['departamento_id' => $filters['departamento_id']]);
-
-            if(isset($filters['origen']))
-                $query->andFilterWhere(['origen' => $filters['origen']]);
-
-            if(isset($filters['tipo']))
-                $query->andFilterWhere(['tipo' => $filters['tipo']]);
-
-
-
 
             if(isset($filters['date_range']) && $filters['date_range']){
                 $date_ini = strtotime(substr($filters['date_range'], 0, 10));

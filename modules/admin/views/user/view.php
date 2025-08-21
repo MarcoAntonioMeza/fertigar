@@ -18,11 +18,11 @@ $this->params['breadcrumbs'][] = $model->id;
 <div class="admin-user-view">
     <p>
         <?= $can['update'] && $model->status != User::STATUS_DELETED ?
-            Html::a('Editar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']): '' ?>
+            Html::a('Editar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary btn-zoom']): '' ?>
 
         <?= $can['delete'] && $model->status != User::STATUS_DELETED ?
             Html::a('Eliminar', ['delete', 'id' => $model->id], [
-                'class' => 'btn btn-danger',
+                'class' => 'btn btn-danger btn-zoom',
                 'data' => [
                     'confirm' => '¿Estás seguro de que deseas eliminar este usuario?',
                     'method' => 'post',

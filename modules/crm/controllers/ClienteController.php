@@ -20,7 +20,6 @@ use app\models\credito\ViewCredito;
 use app\models\esys\EsysListaDesplegable;
 use app\models\venta\VentaTokenPay;
 
-
 /**
  * ClienteController implements the CRUD actions for Cliente model.
  */
@@ -45,7 +44,6 @@ class ClienteController extends \app\controllers\AppController
      */
     public function actionIndex()
     {
-
         return $this->render('index', [
             'can' => $this->can,
         ]);

@@ -101,7 +101,7 @@ class UserController extends \app\controllers\AppController
 
         } else {
             // Cargamos perfiles por default
-            $user->setPerfilesAsignarNames();
+            // $user->setPerfilesAsignarNames();
         }
 
         return $this->render('create', [
@@ -162,8 +162,7 @@ class UserController extends \app\controllers\AppController
 
                 // Guardar Usuario, Perfiles y dirección
                 $user->save();
-
-
+                
                 return $this->redirect(['view', 'id' => $user->id]);
             }
 
@@ -174,7 +173,7 @@ class UserController extends \app\controllers\AppController
         }
 
         $user->item_name = $user->roleName;
-        $user->setPerfilesAsignarNames();
+        // $user->setPerfilesAsignarNames();
 
 
         return $this->render('update', [

@@ -22,7 +22,7 @@ $bttUrl       = Url::to(['tipo-cambio-json-btt']);
         <div class="tipo-cambio-index">
             <div class="row padding">
                 <div class="col-sm-4">
-                    <?= Html::label("FECHA DE TASA", null, ["class" => "control-label"])?>
+                    <?= Html::label("FECHA", null, ["class" => "control-label"])?>
                     <?=  DatePicker::widget([
                         'name' => 'CatalgoTasa[fecha]',
                         'options' => ['placeholder' => '----/---/--','style' => 'font-size:24px;','onchange' => 'fechaChangeTiie28()', 'id' => 'catalogotasa-fecha'],
@@ -42,7 +42,7 @@ $bttUrl       = Url::to(['tipo-cambio-json-btt']);
                 <div class="col-sm-8">
                     <div class="row">
                         <div class="col-sm-5">
-                            <?= Html::label("TIPO DE CAMBIO DDLS", null, ["class" => "control-label"])?>
+                            <?= Html::label("TIPO DE CAMBIO DLLS", null, ["class" => "control-label"])?>
                             <?= Html::input("number",null, null, ["class" => "form-control text-center", "step" =>  '0.01', "style" => "font-size: 24px;font-weight: 700;", 'id' => 'inputTipoCambio' ])?>
                         </div>
                     </div>

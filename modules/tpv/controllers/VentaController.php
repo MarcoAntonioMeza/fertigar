@@ -16,6 +16,7 @@ use app\models\cobro\CobroVenta;
 use app\models\inv\InvProductoSucursal;
 use app\models\apertura\AperturaCaja;
 use app\models\apertura\AperturaCajaDetalle;
+use app\models\catalogo\TipoCambio;
 use app\models\credito\Credito;
 use app\models\user\User;
 use app\models\esys\EsysSetting;
@@ -76,83 +77,6 @@ class VentaController extends \app\controllers\AppController
         ]);
     }
 
-
-    /**
-     * Creates a new Sucursal model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionPreVenta()
-    {
-        $model = new Venta();
-        $model->venta_detalle   = new VentaDetalle();
-        $model->cobroVenta      = new CobroVenta();
-        $ventaID    = isset(Yii::$app->request->post()['venta_id']) ? Yii::$app->request->post()['venta_id'] : null;
-        $is_bloqueo = floatval(AperturaCaja::getTotalCaja()) > floatval(EsysSetting::getCorteCaja()) ? true : false;
-        if ($ventaID) {
-
-            if ($model->load(Yii::$app->request->post()) && $model->venta_detalle->load(Yii::$app->request->post()) && $model->cobroVenta->load(Yii::$app->request->post())) {
-
-                $venta = Venta::findOne($ventaID);
-
-                if ($venta->status ==  Venta::STATUS_PREVENTA) {
-
-                    $productoResponse = [];
-                    $ventaDetalle = VentaDetalle::find()->andWhere(["venta_id" => $ventaID])->all();
-
-                    foreach ($ventaDetalle as $key => $item_detail) {
-                        array_push($productoResponse, [
-                            "producto_id"   => $item_detail->producto_id,
-                            "cantidad"      => $item_detail->cantidad,
-                            "sucursal_id"   => $item_detail->apply_bodega == VentaDetalle::APPLY_BODEGA_ON ? $item_detail->sucursal_id : $venta->sucursal_id,
-                        ]);
-                    }
-
-                    $valid = Operacion::validateOperacionPuntoVenta($productoResponse);
-                    if (empty($valid)) {
-
-
-                        $venta->status = Venta::STATUS_VENTA;
-                        $venta->total = $model->total;
-                        $venta->cliente_id = isset(Yii::$app->request->post()['venta-cliente_id']) && Yii::$app->request->post()['venta-cliente_id'] ? Yii::$app->request->post()['venta-cliente_id'] : $venta->cliente_id;
-
-                        if ($venta->save()) {
-
-                            $model->venta_detalle->saveCerrarVenta($venta->id);
-
-                            if ($model->cobroVenta->saveCobroVenta($venta->id)) {
-                                return $this->redirect([
-                                    'view',
-                                    'id' => $venta->id,
-                                ]);
-                            }
-                        }
-                    } else {
-
-                        $text = "";
-                        foreach ($valid as $key => $error_message) {
-                            $text = $text . "  *" . $error_message["producto"] . " - </br> ";
-                        }
-
-                        Yii::$app->session->setFlash('warning', "ERROR [SIN PRODUCTO] : <br/>" . $text . " SOLICITA UNA MODIFICACION A TU PREVENTA");
-
-                        return $this->redirect(['pre-venta']);
-                    }
-                } else {
-
-                    Yii::$app->session->setFlash('warning', "LA PREVENTA NO PUEDE SER CONCRETADA, VERIFICA TU INFORMACIÓN");
-
-                    return $this->redirect(['pre-venta']);
-                }
-            }
-        }
-
-        return $this->render('create', [
-            'model'     => $model,
-            'bloqueo'   => $is_bloqueo,
-            'can'       => $this->can,
-        ]);
-    }
 
     public function actionImprimirTicket($id)
     {
@@ -251,70 +175,7 @@ class VentaController extends \app\controllers\AppController
     }
 
 
-
-    public function actionImprimirTicketEntrega($id)
-    {
-        //$model  = $this->findModel($id);
-        $ids    = [];
-        $folios = "";
-
-        $VentaTokenPay      = VentaTokenPay::findOne(["venta_id" => $id]);
-        $ventaToken         = VentaTokenPay::find()->andWhere(["token_pay" => $VentaTokenPay->token_pay])->all();
-
-        foreach ($ventaToken as $key => $item_token) {
-            array_push($ids, $item_token->venta_id);
-            $folios = $folios ? $folios . ", " . $item_token->venta_id : $item_token->venta_id;
-        }
-
-        $model = Venta::find()->with('ventaDetalle')->where(['id' => $ids])->all();
-        $count_ventas = VentaDetalle::find()->where(['venta_id' => $ids])->count();
-        $model_detalle_venta = VentaDetalle::find()->where(['venta_id' => $ids])->all();
-
-        //        $model = $this->findModel($id);
-        $lengh = 270;
-        $width = 80;
-        $count = 0;
-        $total_piezas = 0;
-
-        $lengh = $lengh + ($count_ventas  * 40);
-
-        //$width= $width + ($count_ventas  * 2 );
-
-        $content = $this->renderPartial('ticket', ["model" => $model, "model_detalle_venta" => $model_detalle_venta, 'id' => $folios]);
-
-        ini_set('memory_limit', '-1');
-
-        $pdf = new Pdf([
-            // set to use core fonts only
-            'mode' => Pdf::MODE_CORE,
-            // A4 paper format
-            'format' => array($width, $lengh), //Pdf::FORMAT_A4,
-            // portrait orientation
-            'orientation' => Pdf::ORIENT_PORTRAIT,
-            // stream to browser inline
-            'destination' => Pdf::DEST_BROWSER,
-            // your html content input
-            'content' => $content,
-            // format content from your own css file if needed or use the
-            // enhanced bootstrap css built by Krajee for mPDF formatting
-            'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
-            // any css to be embedded if required
-            'cssInline' => '.kv-heading-1{font-size:18px}',
-            // set mPDF properties on the fly
-            'options' => ['title' => 'Ticket de envio'],
-            // call mPDF methods on the fly
-            'methods' => [
-                //'SetHeader'=>[ 'TICKET #' . $model->id],
-                //'SetFooter'=>['{PAGENO}'],
-            ]
-        ]);
-
-        $pdf->marginLeft = 0.5;
-        $pdf->marginRight = 0.5;
-
-        // return the pdf output as per the destination setting
-        return $pdf->render();
-    }
+ 
 
     public function actionImprimirCredito($pay_items)
     {
@@ -508,38 +369,7 @@ class VentaController extends \app\controllers\AppController
             'model' => $model,
         ]);
     }
-    public function actionGetDevolucionValid()
-    {
-        $request = Yii::$app->request;
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        // Cadena de busqueda
-        if ($request->validateCsrfToken() && $request->isAjax) {
-
-            if ($request->get('username') && $request->get('password')) {
-
-                $user  = User::findByUsername($request->get('username'));
-
-                if ($user) {
-                    if (Yii::$app->security->validatePassword($request->get('password'), $user->password_hash)) {
-                        return [
-                            "code" => 202,
-                            "valid" => true,
-                        ];
-                    } else {
-                        return [
-                            "code" => 10,
-                            "message" => "Error al acceder, intenta nuevamente",
-                        ];
-                    }
-                }
-            }
-            return [
-                "code" => 10,
-                "message" => "Error al acceder, intenta nuevamente",
-            ];
-        }
-        throw new BadRequestHttpException('Solo se soporta peticiones AJAX');
-    }
+    
     public function sonTodosIguales($array)
     {
         if (count($array) <= 1) {
@@ -992,55 +822,7 @@ class VentaController extends \app\controllers\AppController
         throw new BadRequestHttpException('Solo se soporta peticiones AJAX');
     }
 
-    public function actionGetCuentasAbierta()
-    {
-        $request = Yii::$app->request;
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        // Cadena de busqueda
-        if ($request->validateCsrfToken() && $request->isAjax) {
-
-
-            $AperturaCaja = AperturaCaja::find()->andWhere([
-                "and",
-                ["=", "status", AperturaCaja::STATUS_PROCESO],
-                ["=", "user_id", Yii::$app->user->identity->id],
-            ])->one();
-
-            $cuentArray     = [];
-
-            $precapturas = Venta::find()
-                ->andWhere([
-                    "and",
-                    ["<", "created_at", time()],
-                ])
-                ->andWhere([
-                    "or",
-                    ["=", "status", Venta::STATUS_PREVENTA],
-                    ["=", "status", Venta::STATUS_VERIFICADO],
-                    ["=", "status", Venta::STATUS_PROCESO_VERIFICACION],
-                ])->orderBy("created_at DESC")->all();
-
-            foreach ($precapturas as $key => $precaptura) {
-                array_push($cuentArray, [
-                    "id"            => $precaptura->id,
-                    "folio"         => "#" . str_pad($precaptura->id, 6, "0", STR_PAD_LEFT),
-                    "cliente"       => $precaptura->cliente_id ? $precaptura->cliente->nombreCompleto : '**PUBLICO EN GENERAL**',
-                    "sucursal_id"   => $precaptura->id,
-                    "total"         => $precaptura->total,
-                    "creado"        => date("Y-m-d h:i:s", $precaptura->created_at),
-                    "creado_por"        => $precaptura->createdBy->nombre . ' ' . $precaptura->createdBy->apellidos,
-                ]);
-            }
-
-            return [
-                "code" => 202,
-                "cuenta"      => $cuentArray,
-            ];
-        }
-
-        throw new BadRequestHttpException('Solo se soporta peticiones AJAX');
-    }
-
+ 
     public function actionAperturaCajaCreate()
     {
         $request = Yii::$app->request->post();
@@ -1207,98 +989,8 @@ class VentaController extends \app\controllers\AppController
         ];
     }
 
-    /**
-     * TRABAJAR AQUI DESPUES DE LA JUNTA.
-     */
-    public function actionPostCreditoCreate()
-    {
-        $request = Yii::$app->request->post();
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        $array_credito  = isset($request["listCredito"]) && count($request["listCredito"]) > 0 ? $request["listCredito"] : null;
-        $array_metodo   = isset($request["metodoPagoArray"]) && count($request["metodoPagoArray"]) > 0 ? $request["metodoPagoArray"] : null;
-        //$total          = isset($request["total"])       ? $request["total"] : null;
-        if ($array_credito && $array_metodo) {
-
-            $response = [];
-
-            $token_pay = bin2hex(random_bytes(16));
-            foreach ($array_credito as $key => $credito) {
-                // MODIFICAMOS EL CREDITO
-                if (floatval($credito["monto"]) > 0) {
-                    $Credito            = Credito::findOne($credito["credito_id"]);
-
-                    $CreditoTokenPay    = new CreditoTokenPay();
-                    $CreditoTokenPay->credito_id    = $Credito->id;
-                    $CreditoTokenPay->token_pay     = $token_pay;
-                    $CreditoTokenPay->save();
-
-                    CreditoAbono::saveItem($Credito->id, $token_pay, floatval($credito["monto"]));
-
-                    //$total_deuda     = floatval($Credito->monto) - floatval(CobroVenta::getPagoCredito($credito["credito_id"]));
-                    $total_deuda     = round(floatval($Credito->monto), 2) - round(floatval($Credito->monto_pagado), 2);
-                    $monto_temp      = floatval($credito["monto"]) > $total_deuda ? $total_deuda : floatval($credito["monto"]);
-
-                    if (round($monto_temp, 2) === round($total_deuda, 2))
-                        $Credito->status = Credito::STATUS_PAGADA;
-                    else
-                        $Credito->status = Credito::STATUS_POR_PAGADA;
-
-                    $Credito->monto_pagado =  round(floatval($Credito->monto_pagado) + floatval($credito["monto"]), 2);
-                    $Credito->update();
-                }
-            }
-
-            foreach ($array_metodo as $key => $item_pago) {
-                $CobroVenta  =  new CobroVenta();
-                $CobroVenta->tipo                   = CobroVenta::TIPO_CREDITO;
-                $CobroVenta->tipo_cobro_pago        = CobroVenta::PERTENECE_COBRO;
-                $CobroVenta->metodo_pago            = $item_pago["metodo_pago_id"];
-                $CobroVenta->trans_token_credito    = $token_pay;
-                $CobroVenta->cantidad               = $item_pago["cantidad"];
-                $CobroVenta->cargo_extra            = $item_pago["cargo_extra"];
-                $CobroVenta->nota_otro              = $item_pago["nota_otro"];
-
-                if ($CobroVenta->save()) {
-
-                    if ($CobroVenta->metodo_pago == CobroVenta::COBRO_EFECTIVO) {
-                        $AperturaCaja = AperturaCaja::find()->andWhere(["and", ["=", "user_id", Yii::$app->user->identity->id], ["=", "status", AperturaCaja::STATUS_PROCESO]])->one();
-
-                        if (isset($AperturaCaja->id)) {
-                            $AperturaCajaDetalle = new AperturaCajaDetalle();
-                            $AperturaCajaDetalle->apertura_caja_id  = $AperturaCaja->id;
-                            $AperturaCajaDetalle->tipo              = AperturaCajaDetalle::TIPO_CREDITO;
-                            $AperturaCajaDetalle->token_pay         = $token_pay;
-                            $AperturaCajaDetalle->cantidad          = $CobroVenta->cantidad;
-                            $AperturaCajaDetalle->status            = AperturaCajaDetalle::STATUS_SUCCESS;
-                            $AperturaCajaDetalle->save();
-
-
-
-                            array_push($response, $CobroVenta->id);
-                        }
-                    }
-                }
-            }
-            return [
-                "code" => 202,
-                "credito" => $token_pay,
-            ];
-        }
-        return [
-            "code" => 10,
-            "message" => "Ocurrio un error, intenta nuevamente.",
-        ];
-    }
-
-    /**
-     * Deletes an existing Sucursal model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     *
-     * @param  integer $id The user id.
-     * @return \yii\web\Response
-     *
-     * @throws NotFoundHttpException
-     */
+   
+  
     public function actionCancelVenta()
     {
         $request = Yii::$app->request->post();
@@ -1528,141 +1220,205 @@ class VentaController extends \app\controllers\AppController
         throw new BadRequestHttpException('Solo se soporta peticiones AJAX');
     }
 
-    public function actionGetTokenVentas()
+    public function actionTipoCambioAjax()
     {
-        $request = Yii::$app->request->get();
-        Yii::$app->response->format = Response::FORMAT_JSON;
-
-        if (isset($request["operacion_id"]) && $request["operacion_id"]) {
-            $VentaTokenPay    = VentaTokenPay::findOne($request["operacion_id"]);
-            $ventaToken = VentaTokenPay::find()->andWhere(["token_pay" => $VentaTokenPay->token_pay])->all();
-            $response       = [];
-            $responsePago   = [];
-            foreach ($ventaToken as $key => $item_token) {
-                //$total_deuda     = floatval($item_credito->monto) - floatval(CobroVenta::getPagoCredito($item_credito->id));
-                array_push($response, [
-                    "id"            => $item_token->venta->id,
-                    "folio"         => str_pad($item_token->venta->id, 6, "0", STR_PAD_LEFT),
-                    "total"         => $item_token->venta->total,
-                    "sucursal"      => isset($item_token->venta->reparto->sucursal->nombre) ? $item_token->venta->reparto->sucursal->nombre : null,
-                    "created_at"    => date("Y-m-d h:i:s", $item_token->created_at),
-                    "empleado"      => $item_token->createdBy->nombreCompleto,
-                ]);
-            }
-
-            $cobroTpvVenta = CobroVenta::find()->andWhere([
-                "and",
-                ["=", "trans_token_venta", $VentaTokenPay->token_pay],
-                ["=", "is_cancel", CobroVenta::IS_CANCEL_OFF],
-            ])->all();
-
-            foreach ($cobroTpvVenta as $key => $item_cobro) {
-                array_push($responsePago, [
-                    "id" => $item_cobro->id,
-                    "metodo_pago"       => $item_cobro->metodo_pago,
-                    "metodo_pago_text"  => CobroVenta::$servicioTpvList[$item_cobro->metodo_pago],
-                    "cantidad"          => $item_cobro->cantidad,
-                ]);
-            }
-
-            return [
-                "code" => 202,
-                "ventas" => $response,
-                "cobro" => $responsePago,
-            ];
-        }
-
-        return [
-            "code" => 10,
-            "message" => "Ocurrio un error, intenta nuevamente.",
-        ];
-    }
-
-    public function actionGetNotasMultiple()
-    {
-        $request = Yii::$app->request->get();
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        if (isset($request["venta_id"]) && $request["venta_id"]) {
-
-            return [
-                "code"   => 202,
-                "ventas" =>  Venta::getOperacionVentaRuta($request["venta_id"]),
-            ];
-        }
-
-        return [
-            "code" => 10,
-            "message" => "Ocurrio un error, intenta nuevamente.",
-        ];
-    }
-
-    public function actionPostCancelacionVenta()
-    {
-
-        $request = Yii::$app->request->post();
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        if (isset($request["venta_id"]) && $request["venta_id"] && isset($request["sucursal_id"]) && $request["sucursal_id"]) {
-            if (Venta::setCancelacionVentaRuta($request["venta_id"], $request["sucursal_id"], $request["nota_cancelacion"])) {
-                return [
-                    "code"   => 202,
-                    "message" =>  "Se cancelo correctamente",
-                ];
-            }
-        }
-
-        return [
-            "code" => 10,
-            "message" => "Ocurrio un error, intenta nuevamente.",
-        ];
-    }
-
-    public function actionUpdateVentaRuta()
-    {
-        $request = Yii::$app->request->post();
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        if (isset($request["ventaObject"]) && $request["ventaObject"]) {
-            if (Venta::setUpdateVentaRuta($request["ventaObject"], $request["nota_cancelacion"])) {
-                return [
-                    "code"   => 202,
-                    "message" =>  "Se realizo correctamente la operacion",
-                ];
-            }
-        }
-
-        return [
-            "code" => 10,
-            "message" => "Ocurrio un error, intenta nuevamente.",
-        ];
-    }
-
-    public function actionVentaInfo()
-    {
-
         $request = Yii::$app->request;
         Yii::$app->response->format = Response::FORMAT_JSON;
         // Cadena de busqueda
         if ($request->validateCsrfToken() && $request->isAjax) {
-
-            if ($request->get('venta_id')) {
-
-                $venta      = Venta::findOne(trim($request->get('venta_id')));
-                $infVenta   = Venta::ventaInfo(trim($request->get('venta_id')));
-                //$invenRuta  = Reparto::getInventario($venta->reparto_id);
-
-                return [
-                    "code"          => 202,
-                    "venta"         => $infVenta,
-                    "inventario"    => InvProductoSucursal::getStockRutaObject($venta->reparto->sucursal_id),
-                ];
-            }
-
             return [
-                "code" => 10,
-                "message" => "Error al buscar el producto, intenta nuevamente",
+                "code" => 202,
+                "tipoCambio" => TipoCambio::getUltimoTipoCambio()
             ];
         }
         throw new BadRequestHttpException('Solo se soporta peticiones AJAX');
     }
+
+
+    public function actionPostFactura($venta_id)
+    {
+        $venta = Venta::findOne($venta_id);
+
+        $params = [
+            'Serie' => '01',
+            'Folio' => $venta->id,
+            // 'Date' => '2022-03-30',
+            'PaymentForm' => '01',
+            'PaymentConditions' => 'CREDITO A SIETE DIAS',
+            'Currency' => 'MXN',
+            'CfdiType' => 'I',
+            'PaymentMethod' => 'PUE',
+            'ExpeditionPlace' => '72160',
+            "Receiver" => [
+                "Rfc"=> "XAXX010101000",
+                "Name"=> "PUBLICO EN GENERAL",
+                "CfdiUse"=> "S01",
+                "FiscalRegime"=> "616",
+                "TaxZipCode" => 72160
+            ],
+            'Items' => [],
+            "GlobalInformation" => [
+                "Periodicity"=> "01",
+                "Months"=> "08",
+                "Year"=> 2025
+            ]
+        ];
+
+        $item = [];
+        $rate = 0.160000;
+
+
+        foreach ($venta->ventaDetalle as $key => $itemVenta) {
+
+            $subtotal = round($itemVenta->precio_venta * $itemVenta->cantidad, 6);
+            $iva = round($subtotal * $rate, 6);
+
+            array_push($item, 
+                [
+                    'ProductCode' => $itemVenta->producto->clave_sat,
+                    'IdentificationNumber' => $itemVenta->producto->clave,
+                    'Description' => $itemVenta->producto->nombre,
+                    'Unit' => 'Pieza',
+                    'UnitCode' => 'H87',
+                    'UnitPrice' => $itemVenta->precio_venta,
+                    'Quantity' => $itemVenta->cantidad,
+                    'Subtotal' =>  $subtotal,
+                    'TaxObject' => '02',
+                    'Taxes' => [
+                        [
+                            'Base' => $subtotal,
+                            'Rate' => $rate,
+                            'Total' => $iva,
+                            'Name' => 'IVA',
+                            'IsRetention' => false,
+                        ],
+                    ],
+                    'Total' => round($subtotal + $iva,6)
+                ]);
+        }
+
+        $params['Items'] = $item;
+        
+        // $factura = Yii::$app->facturama->createInvoice($params);
+        // return $this->asJson($factura);
+        
+        try {
+            
+            $connection = \Yii::$app->db;
+            $transaction = $connection->beginTransaction();
+            
+            $factura = Yii::$app->facturama->createInvoice($params);
+
+            if($factura->Status === 'active' ){
+                
+                $connection->createCommand()
+                ->insert('factura', [
+                        'facturaid'        => $factura->Id,
+                        'uuid'             => $factura->Complement->TaxStamp->Uuid,
+                        'venta_id'         => $venta->id,
+                        'monto'            => $venta->total,
+                        'tipo'             => 'I',
+                        'xml'              => '',
+                        'pdf'              => '',
+                        'created_at'       => time(),
+                ])->execute();            
+    
+                $transaction->commit();
+                
+                Yii::$app->session->setFlash('success', 'SE GENERO CORRECTAMENTE LA FACTURA');
+
+            }else{
+
+                Yii::$app->session->setFlash('danger', 'Info' .  json_encode($factura));
+            }
+    
+        
+        } catch (\Exception $e) {
+            Yii::$app->session->setFlash('danger', 'Error : '. $e->getMessage());
+        }
+
+        return $this->redirect(['view', 'id' => $venta->id]);
+    }
+    
+    public function actionGetFactura($venta_id)
+    {
+          $query = (new Query())
+            ->select([
+                'facturaid'
+            ])
+            ->from('factura')
+            ->andWhere(['venta_id' => $venta_id ])
+            ->one();
+        try {
+            $id = $query['facturaid'];
+            $pdf = Yii::$app->facturama->downloadInvoice('pdf', $id);
+            // $myfile = fopen('factura'.$id.'.'.'pdf', 'a+');
+            // fwrite($myfile, base64_decode(end($pdf)));
+            // fclose($myfile);
+            // printf('<pre>%s<pre>', var_export(true));
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
+            Yii::$app->response->headers->add('Content-Type', 'application/pdf');
+            Yii::$app->response->headers->add('Content-Disposition', "attachment; filename=factura-{$id}.pdf");
+
+            return  base64_decode(end($pdf));
+        } catch (\Exception $e) {
+            return $this->asJson(['error' => $e->getMessage()]);
+        }
+    }
+
+    
+ 
+
+    // public function actionPostCancelacionVenta()
+    // {
+
+    //     $request = Yii::$app->request->post();
+    //     Yii::$app->response->format = Response::FORMAT_JSON;
+    //     if (isset($request["venta_id"]) && $request["venta_id"] && isset($request["sucursal_id"]) && $request["sucursal_id"]) {
+    //         if (Venta::setCancelacionVentaRuta($request["venta_id"], $request["sucursal_id"], $request["nota_cancelacion"])) {
+    //             return [
+    //                 "code"   => 202,
+    //                 "message" =>  "Se cancelo correctamente",
+    //             ];
+    //         }
+    //     }
+
+    //     return [
+    //         "code" => 10,
+    //         "message" => "Ocurrio un error, intenta nuevamente.",
+    //     ];
+    // }
+ 
+
+    // public function actionVentaInfo()
+    // {
+
+    //     $request = Yii::$app->request;
+    //     Yii::$app->response->format = Response::FORMAT_JSON;
+    //     // Cadena de busqueda
+    //     if ($request->validateCsrfToken() && $request->isAjax) {
+
+    //         if ($request->get('venta_id')) {
+
+    //             $venta      = Venta::findOne(trim($request->get('venta_id')));
+    //             $infVenta   = Venta::ventaInfo(trim($request->get('venta_id')));
+    //             //$invenRuta  = Reparto::getInventario($venta->reparto_id);
+
+    //             return [
+    //                 "code"          => 202,
+    //                 "venta"         => $infVenta,
+    //                 "inventario"    => InvProductoSucursal::getStockRutaObject($venta->reparto->sucursal_id),
+    //             ];
+    //         }
+
+    //         return [
+    //             "code" => 10,
+    //             "message" => "Error al buscar el producto, intenta nuevamente",
+    //         ];
+    //     }
+    //     throw new BadRequestHttpException('Solo se soporta peticiones AJAX');
+    // }
 
 
     //------------------------------------------------------------------------------------------------//

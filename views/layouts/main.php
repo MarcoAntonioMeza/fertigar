@@ -25,8 +25,6 @@ AppAsset::register($this);
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode(strtoupper($this->title . ($this->title? ' | ': '') . Yii::$app->name)) ?></title>
         <?php $this->head() ?>
-
-
     </head>
     <body data-url-root="<?= Url::home(true) ?>">
         <?php $this->beginBody() ?>
@@ -45,14 +43,7 @@ AppAsset::register($this);
 
             <div id="page-wrapper" class="gray-bg">
                 <div class="row border-bottom">
-                    <nav class="navbar navbar-static-top  " role="navigation" 
-                    style="
-                    margin-bottom: 0;     margin-bottom: 0;
-                       
-                        background-size: cover;
-                        background-repeat: no-repeat;
-                        background-position: left center;
-                        background-size: 45% 173%;">
+                    <nav class="navbar navbar-static-top  " role="navigation" >
                         <?= Yii::$app->nifty->get_notification_dropdown() ?>
                     </nav>
                 </div>
@@ -92,28 +83,6 @@ AppAsset::register($this);
 <?php $this->endPage() ?>
 
 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script> -->
 
-<?php if (Yii::$app->user->can('verificacionPreventaAccess')): ?>
-
-<script>
-$(function(){
-    find_preventa();
-    setInterval(find_preventa, 20000);
-})
-
-var find_preventa = function(){
-    $.get("<?= Url::to(['/tpv/pre-venta/get-comanda-abierta']) ?>", function(response){
-        if (response.code == 202) {
-            if (response.item_count > 0 ) {
-                $('#lbl-proceso-verificacion-count').html(response.item_count);
-                $('#icon-proceso-verificacion').css({ "color" : "#5c965a" });
-                $('#icon-proceso-verificacion').addClass("animation-zoom");
-                $('#lbl-proceso-verificacion-count').css({ "background" : "#5c965a" });
-            }
-        }
-    })
-};
-</script>
-<?php endif ?>

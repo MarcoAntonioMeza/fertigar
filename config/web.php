@@ -63,6 +63,11 @@ $config = [
         ]
     ],
     'components' => [
+        'facturama' => [
+            'class' => 'app\components\FacturamaComponent',
+            'username' => 'DanielGaytan',
+            'password' => 'Lerco!2025',
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'nteSskI2Fd9kGJzWokwYRhv37Wx8oH5V',

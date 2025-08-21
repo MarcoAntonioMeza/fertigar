@@ -287,9 +287,10 @@ class NiftyComponent extends Component{
 			* Administración
 			*****************************/
 			$admin = [];
+			$adminSistema = [];
 
 			if(Yii::$app->user->can('userView'))
-				$admin[] = ['label' => '<i class="fa fa-users"></i><span class="nav-label">Usuarios</span>', 'url' => ['/admin/user/index']];
+				$adminSistema[] = ['label' => '<span class="nav-label">Usuarios</span>', 'url' => ['/admin/user/index']];
 
 
 			$adminConfig = [];
@@ -305,16 +306,10 @@ class NiftyComponent extends Component{
 
 
 			if(!empty($adminConfig))
-				$admin[] = ['label' => '<i class="fa fa-cogs"></i><span class="nav-label">Configuraciones </span> <span class="fa arrow"></span>', 'url' => '#', 'items' => $adminConfig,'submenuTemplate' => "\n<ul class='nav nav-second-level'>\n{items}\n</ul>\n"];
-
-
-			$adminSistema = [];
+				$adminSistema[] = ['label' => '<span class="nav-label">Configuraciones </span> <span class="fa arrow"></span>', 'url' => '#', 'items' => $adminConfig,'submenuTemplate' => "\n<ul class='nav nav-second-level'>\n{items}\n</ul>\n"];
 
 			if(Yii::$app->user->can('historialAccesosUser'))
 				$adminSistema[] = ['label' => 'Historial de accesos', 'url' => ['/admin/historial-de-acceso/index']];
-
-			// if(Yii::$app->user->can('theCreator'))
-			// 	$adminSistema[] = ['label' => 'Versiones / Updates ', 'url' => ['/admin/version/list']];
 
 			if(!empty($adminSistema))
 				$admin[] = ['label' => '<i class="fa fa-database"></i><span class="nav-label">Sistema</span> <span class="fa arrow"></span>', 'url' => '#', 'items' => $adminSistema,'submenuTemplate' => "\n<ul class='nav nav-second-level'>\n{items}\n</ul>\n"];
@@ -323,11 +318,7 @@ class NiftyComponent extends Component{
 			/*****************************
 			* Menú Items
 			*****************************/
-				#if(!empty($incidencia)){
-				#	foreach ($incidencia as $key => $item) {
-				#		$this->menuItems[] = $item;
-				#	}
-				#}
+			 
 				
 				if(!empty($crm)){
 					foreach ($crm as $key => $item) {
@@ -380,11 +371,7 @@ class NiftyComponent extends Component{
 					}
 				}
 
-				#if(!empty($reporte)){
-				#	foreach ($reporte as $key => $item) {
-				#		$this->menuItems[] = $item;
-				#	}
-				#}
+				
 
 			 	if(!empty($logistica)){
 					foreach ($logistica as $key => $item) {
@@ -399,11 +386,7 @@ class NiftyComponent extends Component{
 					}
 				}
 
-				#if(!empty($contabilidad)){
-				#	foreach ($contabilidad as $key => $item) {
-				#		$this->menuItems[] = $item;
-				#	}
-				#}
+				
 
 
 				if(!empty($admin)){
@@ -432,26 +415,10 @@ class NiftyComponent extends Component{
                 <li>
                     <span class="m-r-sm text-muted welcome-message">Bienvenido a <?= Yii::$app->name ?>.</span>
                 </li>
-		<!-- 
-                <li class="dropdown">
-				    <a href="<?= Url::to(['/apk/APP-ARROYO-V1.0.13.apk']) ?>" download>
-				        <i class="fa fa-android"  style="font-size:54px;color: #57dc71;"></i>
-				        <p style="font-size:10px; font-weight:700; color:#000; text-align:center">V.1.0.13</p>
-				    </a>
-				</li>
-
-				<?php if (Yii::$app->user->can('verificacionPreventaAccess')): ?>
-	                <li class="dropdown">
-	                	<a class="dropdown-toggle count-info"  href="<?= Url::to(["/tpv/pre-venta/index-comanda-autorizacion"]) ?>">
-	                    	<i class="fa fa-shopping-cart"  id="icon-proceso-verificacion" style="font-size:54px; "></i><span class="label " style="color: #fff;" id="lbl-proceso-verificacion-count">0</span>
-	                    </a>
-	                </li>
-				<?php endif ?>
-				-->
 
                 <li class="dropdown">
                     <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-                        <i class="fa fa-bell"  style="font-size:54px; <?= (User::getNotificacionInventario() ? count(User::getNotificacionInventario()) : 0 ) +  ( User::getNotificacionInventarioRevision() ? count(User::getNotificacionInventarioRevision()) : 0 ) > 0 ? 'color:#cbb70e' : ''  ?>"></i>  <span class="label " style="<?= ( User::getNotificacionInventario() ? count(User::getNotificacionInventario()) : 0) +  (User::getNotificacionInventarioRevision() ? count(User::getNotificacionInventarioRevision()) : 0 ) > 0 ? 'background: #cbb70e; color: #fff;' : ''  ?>"><?= ( User::getNotificacionInventario() ? count(User::getNotificacionInventario()) : 0) +  (User::getNotificacionInventarioRevision() ? count(User::getNotificacionInventarioRevision()) : 0 ) ?></span>
+                        <i class="fa fa-bell"  style="font-size:22px; <?= (User::getNotificacionInventario() ? count(User::getNotificacionInventario()) : 0 ) +  ( User::getNotificacionInventarioRevision() ? count(User::getNotificacionInventarioRevision()) : 0 ) > 0 ? 'color:#cbb70e' : ''  ?>"></i>  <span class="label " style="<?= ( User::getNotificacionInventario() ? count(User::getNotificacionInventario()) : 0) +  (User::getNotificacionInventarioRevision() ? count(User::getNotificacionInventarioRevision()) : 0 ) > 0 ? 'background: #cbb70e; color: #fff;' : ''  ?>"><?= ( User::getNotificacionInventario() ? count(User::getNotificacionInventario()) : 0) +  (User::getNotificacionInventarioRevision() ? count(User::getNotificacionInventarioRevision()) : 0 ) ?></span>
                     </a>
                     <ul class="dropdown-menu dropdown-alerts">
                     	<?php foreach (User::getNotificacionInventario() as $key => $item_notificacion): ?>
@@ -962,7 +929,8 @@ class NiftyComponent extends Component{
 
 			ob_start();
 			?>
-			<div class="mainnav-widget" style="width:100%">
+			<?php /*
+			<!-- <div class="mainnav-widget" style="width:100%">
 
 				<div id="wg-server" class="hide-small mainnav-widget-content" style="padding: 10px 15px;">
 					<ul class="nav metismenu">
@@ -997,7 +965,8 @@ class NiftyComponent extends Component{
 
 					nifty_avg(avg_url, avg_interval);
 				});
-			</script>
+			</script> -->
+			*/?>
 			<?php
 
 			return ob_get_clean();

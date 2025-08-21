@@ -57,7 +57,8 @@
         "bower-asset/jquery.print": "~1.6",
         "2amigos/qrcode-library": "~1.1",
         "phpoffice/phpexcel": "dev-develop",
-        "luecano/numero-a-letras": "2.1"
+        "luecano/numero-a-letras": "2.1",
+        "facturama/facturama-php-sdk": "^2.0@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

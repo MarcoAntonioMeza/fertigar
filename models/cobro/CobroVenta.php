@@ -76,7 +76,7 @@ class CobroVenta extends \yii\db\ActiveRecord
     public static $servicioList = [
         self::COBRO_EFECTIVO        => 'EFECTIVO',
         self::COBRO_CHEQUE          => 'CHEQUE',
-        self::COBRO_TRANFERENCIA    => 'TRANFERENCIA',
+        self::COBRO_TRANFERENCIA    => 'TRANSFERENCIA',
         self::COBRO_TARJETA_CREDITO => 'TARJETA DE CREDITO',
         self::COBRO_TARJETA_DEBITO  => 'TARJETA DE DEBITO',
         self::COBRO_DEPOSITO        => 'DEPOSITO',
@@ -86,7 +86,7 @@ class CobroVenta extends \yii\db\ActiveRecord
     public static $servicioTpvList = [
         self::COBRO_EFECTIVO        => 'EFECTIVO',
         self::COBRO_CHEQUE          => 'CHEQUE',
-        self::COBRO_TRANFERENCIA    => 'TRANFERENCIA',
+        self::COBRO_TRANFERENCIA    => 'TRANSFERENCIA',
         self::COBRO_TARJETA_CREDITO => 'TARJETA DE CREDITO',
         self::COBRO_TARJETA_DEBITO  => 'TARJETA DE DEBITO',
         self::COBRO_DEPOSITO        => 'DEPOSITO',
@@ -97,7 +97,7 @@ class CobroVenta extends \yii\db\ActiveRecord
     public static $servicioListAll = [
         self::COBRO_EFECTIVO        => 'EFECTIVO',
         self::COBRO_CHEQUE          => 'CHEQUE',
-        self::COBRO_TRANFERENCIA    => 'TRANFERENCIA',
+        self::COBRO_TRANFERENCIA    => 'TRANSFERENCIA',
         self::COBRO_TARJETA_CREDITO => 'TARJETA DE CREDITO',
         self::COBRO_TARJETA_DEBITO  => 'TARJETA DE DEBITO',
         self::COBRO_DEPOSITO        => 'DEPOSITO',

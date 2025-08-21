@@ -6,7 +6,12 @@ use Luecano\NumeroALetras\NumeroALetras;
 
 
 $formatter = new NumeroALetras();
-$total_str =  $formatter->toWords($model[0]->total);
+$partes = explode('.', round($model[0]->total,2));
+
+$total_str =  $formatter->toWords($partes[0]) . ' PESOS '  ;
+
+
+
 
 $folio = isset($id) ? $id : '000061';
 $fecha = isset($model[0]->created_at) ? Esys::fecha_en_texto($model[0]->created_at, true) : date('d/M/Y');
@@ -20,7 +25,7 @@ $iva = $venta_model->iva;
 $ieps = $venta_model->ieps;
 $total = $venta_model->total;
 $cantidad = $total;
-$cantidad_letra = 'sesenta y ocho mil setecientos dieciocho Pesos 32/100 M.N.'; // Puedes generar esto dinámicamente si tienes función
+
 $fecha_pago = $fecha;
 $serie = '1';
 $serie_total = '1';
@@ -30,6 +35,8 @@ $tribunal = 'Primer Partido Judicial del Estado de Michoacán';
 $fecha_suscripcion = $fecha;
 
 $moneda = $model[0]->moneda;
+
+$total_str = $total_str . (isset($partes[1]) ? $partes[1] : '0') . '/100 '. (strtoupper($moneda) !== 'MXN' ? $moneda : 'M.N.'  );
 
 $nombre_cliente = isset($model[0]->cliente->nombre) ? $model[0]->cliente->nombre : 'N/A';
 $telefono_cliente = isset($model[0]->cliente->telefono) ? $model[0]->cliente->telefono : 'N/A';
@@ -41,16 +48,20 @@ $direccion_cliente = isset($model[0]->cliente) ? $model[0]->cliente->getDireccio
 ?>
 
 <body style="font-family: Arial, sans-serif; background: #f4f7fb; color: #222; margin: 0; padding: 0; font-size:0.85em;">
+	
 	<table style="width:100%;">
 		<tr>
 			<td style="width:50%; text-align:left; vertical-align:top;">
+				
 				<img src="https://grupofertigar.com/wp-content/uploads/2023/10/GFP-Color-02.png" alt="GRUPO FERTIGA" style="height:60px; margin-bottom:5px;">
 				<div style="font-weight:bold; font-size:15px; margin-top:8px;"><?= Html::encode($beneficiario) ?></div>
 				<div style="font-size:12px;"><b>Dirección:</b> <?= Html::encode($domicilio) ?></div>
 				<div style="font-size:12px;"><b>Teléfono:</b> <?= Html::encode($telefono) ?></div>
 				<div style="font-size:12px;"><b>Email:</b> <?= Html::encode($email) ?></div>
+				
 			</td>
 			<td style="width:50%; text-align:left; vertical-align:top;">
+				
 				<div style="font-weight:bold; font-size:15px;"><?= Html::encode($nombre_cliente) ?></div>
 				<div style="font-size:12px;"><b>Dirección:</b> <?= Html::encode($direccion_cliente) ?></div>
 				<div style="font-size:12px;"><b>Teléfono:</b> <?= Html::encode($telefono_cliente) ?></div>
@@ -111,10 +122,13 @@ $direccion_cliente = isset($model[0]->cliente) ? $model[0]->cliente->getDireccio
 	</table>
 
 	<div style="background:#2e7d32; width:100%; margin:12px 0 8px 0; color:#fff; font-weight:bold; font-size:1em; padding:6px 0; text-align:center; text-shadow:0 1px 2px #222; border-radius:4px;">
-		IMPORTE CON LETRA: <?= $total_str ?> <?= $moneda ?>
+		IMPORTE CON LETRA: <?= $total_str ?> 
 	</div>
 
+	<div style="border-style:dashed; border-width:1px; width:100%">
 
+	</div>
+	
 
 	<div style="margin:16px 0 0 0; padding:6px 10px; background:#f8f9fa; border-radius:7px; border:1px solid #bbb; font-size:0.68em; color:#222; line-height:1.25; box-shadow:0 1px 4px #bbb2;" class="text-justify">
 		PAGARÉ MERCANTÍL SIN PROTESTO Bo. POR_______________________________________
@@ -124,7 +138,7 @@ $direccion_cliente = isset($model[0]->cliente) ? $model[0]->cliente->getDireccio
 		<br>
 		<p> Debo y pagaré incondicionalmente por este pagaré a la orden de <?= $beneficiario ?>, en esta
 		ciudad de Uruapan en el domicilio URUAPAN-CUATRO CAMINOS KM 61 SIN NUMERO la cantidad de $<?= number_format($total, 2) ?>
-		<?= $total_str ?> <?= $moneda ?>.
+		<?= $total_str ?> .
 		</p>
 
 		<b>Cantidad recibida a mi entera satisfacción, debiendo realizar el pago el día correspondiente.</b><br>
@@ -134,7 +148,26 @@ $direccion_cliente = isset($model[0]->cliente) ? $model[0]->cliente->getDireccio
 		Los deudores renuncian al fuero que por razón de su domicilio presente o futuro pudiera corresponderles y se someten a la jurisdicción de los tribunales competentes del <b><?= $tribunal ?></b>.
 
 		<br><br>
+		Suscrito en Uruapan, Michoacan el día: <?= date('d',$model[0]->created_at) .'/' . Esys::$meses[intval(date('m',$model[0]->created_at))] . '/'. date('Y',$model[0]->created_at) ?>
+		<br><br>
 		Suscriptor: <?= $nombre_cliente ?>
+
+		<table width="100%">
+			<tr>
+				<td>
+					<p style="font-size: 12px;">DIRECCION: <?= $direccion_cliente ?></p>
+					<p style="font-size: 12px;">CUIDAD:  </p>
+					<p style="font-size: 12px;">FIRMA: </p>
+				</td>
+				<td>
+					<p style="font-size: 12px;">AVAL</p>
+					<p style="font-size: 12px;">DIRECCION</p>
+					<p style="font-size: 12px;">CUIDAD</p>
+					<p style="font-size: 12px;">FIRMAL:</p>
+				</td>
+			</tr>
+		</table>
 	</div>
+
 
 </body>

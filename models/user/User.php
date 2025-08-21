@@ -89,15 +89,6 @@ class User extends UserIdentity
     const API_ACTIVE   = 10;
     const API_INACTIVE = 1;
 
-
-    const ORIGEN_USA = 1;
-    const ORIGEN_MX = 2;
-
-    public static $origenList = [
-        self::ORIGEN_MX   => 'México',
-        self::ORIGEN_USA  => 'United States',
-    ];
-
     public static $appList = [
         self::API_ACTIVE   => 'SI',
         self::API_INACTIVE  => 'NO',
@@ -105,21 +96,21 @@ class User extends UserIdentity
 
 
 
-    const PERTENECE_PANEL           = 10;
-    const PERTENECE_VENDEDOR        = 20;
-    const PERTENECE_REPARTIDO       = 30;
-    const PERTENECE_GERENCIA_TIENDA     = 40;
-    const PERTENECE_GERENCIA_COMPRAS    = 50;
-    const PERTENECE_GERENCIA_CEDIS      = 60;
+    // const PERTENECE_PANEL           = 10;
+    // const PERTENECE_VENDEDOR        = 20;
+    // const PERTENECE_REPARTIDO       = 30;
+    // const PERTENECE_GERENCIA_TIENDA     = 40;
+    // const PERTENECE_GERENCIA_COMPRAS    = 50;
+    // const PERTENECE_GERENCIA_CEDIS      = 60;
 
-    public static $perteneceList = [
-        self::PERTENECE_PANEL       => 'CONTROL INTERNO',
-        self::PERTENECE_VENDEDOR    => 'AGENTE DE PREVENTA - MANEJO DE COMANDAS',
-        self::PERTENECE_REPARTIDO    => 'GERENTE DE RUTA',
-        self::PERTENECE_GERENCIA_TIENDA   => 'GERENTE DE TIENDA',
-        self::PERTENECE_GERENCIA_COMPRAS  => 'GERENTE DE COMPRAS',
-        self::PERTENECE_GERENCIA_CEDIS    => 'GERENTE DE CEDIS',
-    ];
+    // public static $perteneceList = [
+    //     self::PERTENECE_PANEL       => 'CONTROL INTERNO',
+    //     self::PERTENECE_VENDEDOR    => 'AGENTE DE PREVENTA - MANEJO DE COMANDAS',
+    //     self::PERTENECE_REPARTIDO    => 'GERENTE DE RUTA',
+    //     self::PERTENECE_GERENCIA_TIENDA   => 'GERENTE DE TIENDA',
+    //     self::PERTENECE_GERENCIA_COMPRAS  => 'GERENTE DE COMPRAS',
+    //     self::PERTENECE_GERENCIA_CEDIS    => 'GERENTE DE CEDIS',
+    // ];
 
     /**
      * List of names for each status.
@@ -146,7 +137,7 @@ class User extends UserIdentity
 
     public $dir_obj;
 
-    public $perfiles_names = [];
+    // public $perfiles_names = [];
 
     private $CambiosLog;
 
@@ -181,10 +172,10 @@ class User extends UserIdentity
             [['auth_key'], 'string', 'max' => 32],
             [['cargo'], 'string', 'max' => 150],
             [['username', 'email', 'password_hash', 'password_reset_token', 'account_activation_token'], 'string', 'max' => 255],
-            [['perfiles_names'], 'each', 'rule' => ['string']],
+            // [['perfiles_names'], 'each', 'rule' => ['string']],
 
-            [['origen'],'integer'],
-            [['pertenece_a'],'integer'],
+            
+            
 
 
             ['username', 'string', 'min' => 3, 'max' => 255],
@@ -235,7 +226,6 @@ class User extends UserIdentity
             'cargo' => 'Cargo',
             'departamento_id' => 'Departamento',
             'token' => 'Token',
-            'pertenece_a' => 'Pertenece',
             'sucursal_id' => 'Sucursal',
             'tituloPersonal.singular' => 'Titulo',
             'perfil.item_name' => 'Perfil',
@@ -350,21 +340,6 @@ class User extends UserIdentity
         return $this->hasMany(AuthItem::className(), ['updated_by' => 'id']);
     }
 
-    public function getClientes()
-    {
-        return $this->hasMany(Cliente::className(), ['asignado_a_id' => 'id']);
-    }
-
-    public function getClientes0()
-    {
-        return $this->hasMany(Cliente::className(), ['created_by' => 'id']);
-    }
-
-    public function getClientes1()
-    {
-        return $this->hasMany(Cliente::className(), ['updated_by' => 'id']);
-    }
-
     public function getEsysListaDesplegables()
     {
         return $this->hasMany(EsysListaDesplegable::className(), ['created_by' => 'id']);
@@ -456,12 +431,7 @@ class User extends UserIdentity
         ->andWhere(["asignado_id" => Yii::$app->user->identity->id])
         ->all();
     }
-    public static function getNotificacionIncidenciaTraspaso()
-    {
-        return TraspasoOperacion::find()
-        ->andWhere([ "=", "status", TraspasoOperacion::STATUS_PROCESO ])
-        ->count();
-    }
+    
 
     public static function getNotificacionInventarioRevision()
     {
@@ -508,10 +478,6 @@ class User extends UserIdentity
         return implode(', ', $perfiles_string);
     }
 
-
-
-
-
     public function savePerfiles()
     {
         $auth    = Yii::$app->authManager;
@@ -522,16 +488,6 @@ class User extends UserIdentity
             case self::SCENARIO_CREATE:
                 // Asignamos el perfil del nuevo usuario
                 $auth->assign($newRole, $userId);
-
-                // Agregamos perfiles que pudiera asignar
-                foreach ($this->perfiles_names as $key => $perfil) {
-                    $UserAsignarPerfil = new UserAsignarPerfil([
-                        'user_id' => $userId,
-                        'perfil'  => $perfil,
-                    ]);
-
-                    $UserAsignarPerfil->save();
-                }
                 break;
 
             case self::SCENARIO_UPDATE:
@@ -551,47 +507,18 @@ class User extends UserIdentity
                     EsysCambiosLog::createExpressLog(self::tableName(), ['item_name' => ['old' => $oldRoleName, 'dirty' => $newRole->name]], $this->id);
                 }
 
-
-                // Recorremos todos los perfiles del sistema
-                foreach ($auth->getRoles() as $perfil => $value) {
-                    $UserAsignarPerfil = UserAsignarPerfil::find()->where(['user_id' => $userId, 'perfil' => $perfil])->one();
-
-                    // Comprobamos si es necesario eliminar del usuario el perfil que pudiera asignar
-                    if($UserAsignarPerfil && !in_array($perfil, $this->perfiles_names)) {
-                        $UserAsignarPerfil->delete();
-
-                        // Guardamos un registro de los cambios
-                        EsysCambiosLog::createExpressLog(self::tableName(), ['perfilesAsignarString' => ['old' => $perfil, 'dirty' => '**Removido**']], $this->id);
-                    }
-
-                    // Comprobamos si es necesario agregar el nuevo perfil que pudiera asignar el usuario
-                    if(!$UserAsignarPerfil && in_array($perfil, $this->perfiles_names)) {
-                        $UserAsignarPerfil = new UserAsignarPerfil([
-                            'user_id' => $userId,
-                            'perfil'  => $perfil,
-                        ]);
-
-                        $UserAsignarPerfil->save();
-
-                        // Guardamos un registro de los cambios
-                        EsysCambiosLog::createExpressLog(self::tableName(), ['perfilesAsignarString' => ['old' => $perfil, 'dirty' => '**Agregado**']], $this->id);
-                    }
-                }
                 break;
         }
     }
 
-    public function setPerfilesAsignarNames()
-    {
-        $this->perfiles_names = [];
+    // public function setPerfilesAsignarNames()
+    // {
+    //     $this->perfiles_names = [];
 
-        foreach ($this->asignarPerfils as $key => $value) {
-            $this->perfiles_names[] = $value->perfil;
-        }
-    }
-
-
-
+    //     foreach ($this->asignarPerfils as $key => $value) {
+    //         $this->perfiles_names[] = $value->perfil;
+    //     }
+    // }
 
     public static function getAvatar()
     {
@@ -686,19 +613,13 @@ class User extends UserIdentity
                             $this->CambiosLog->updateValue($attribute, 'dirty', self::$statusList[$value['dirty']]);
                             break;
 
-                        case 'pertenece_a':
-                            $this->CambiosLog->updateValue($attribute, 'old', self::$perteneceList[$value['old']] );
-                            $this->CambiosLog->updateValue($attribute, 'dirty', self::$perteneceList[$value['dirty']]);
-                            break;
+                       
 
                         case 'api_enabled':
                             $this->CambiosLog->updateValue($attribute, 'old', isset(self::$appList[$value['old']]) ? self::$appList[$value['old']] : '');
                             $this->CambiosLog->updateValue($attribute, 'dirty', self::$appList[$value['dirty']]);
                             break;
-                        case 'origen':
-                            $this->CambiosLog->updateValue($attribute, 'old', isset(self::$origenList[$value['old']]) ? self::$origenList[$value['old']] : '');
-                            $this->CambiosLog->updateValue($attribute, 'dirty', self::$origenList[$value['dirty']]);
-                            break;
+                        
 
                         case 'password_hash':
                         case 'password_reset_token':
